@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proforma FLOSAL</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', Arial, sans-serif;
+    background: #f0f2f5;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .page {
+    background: #fff;
+    max-width: 720px;
+    margin: 0 auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    overflow: hidden;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 20px 28px 16px;
+    border-bottom: 3px solid #1a3a5c;
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .logo-shield {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+  }
+  .client-block {
+    font-size: 12px;
+    color: #444;
+    line-height: 1.7;
+  }
+  .client-block .label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #1a3a5c;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 2px;
+  }
+  .client-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #111;
+  }
+  .brand-block {
+    text-align: right;
+  }
+  .brand-name {
+    font-size: 28px;
+    font-weight: 900;
+    color: #c0392b;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .brand-sub { font-size: 10px; font-weight: 700; color: #1a3a5c; margin-top: 2px; }
+  .brand-phones { font-size: 11px; font-weight: 700; color: #1a3a5c; }
+  .brand-corp { font-size: 10px; color: #1a3a5c; }
+  .proforma-badge {
+    display: inline-block;
+    margin-top: 6px;
+    background: #1a3a5c;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 3px;
+  }
+
+  /* DATE */
+  .date-row {
+    background: #f7f8fa;
+    padding: 6px 28px;
+    font-size: 11px;
+    color: #888;
+    border-bottom: 0.5px solid #e5e7eb;
+  }
+  .date-row span { font-weight: 600; color: #444; }
+
+  /* TABLE */
+  .table-wrap { padding: 0; }
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    background: #1a3a5c;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 8px 10px;
+    text-transform: uppercase;
+  }
+  thead th.desc { text-align: left; padding-left: 16px; }
+  thead th.num { text-align: center; width: 36px; }
+  thead th.cant { text-align: center; width: 56px; }
+  thead th.unit { text-align: right; width: 72px; }
+  thead th.total { text-align: right; width: 80px; padding-right: 16px; }
+  tbody tr { border-bottom: 0.5px solid #e5e7eb; }
+  tbody tr:nth-child(even) { background: #f4f8ff; }
+  tbody td { padding: 7px 10px; font-size: 11px; color: #222; vertical-align: top; }
+  tbody td.num { text-align: center; font-weight: 600; color: #1a3a5c; }
+  tbody td.cant { text-align: center; }
+  tbody td.unit { text-align: right; }
+  tbody td.total { text-align: right; font-weight: 600; padding-right: 16px; }
+  tbody td.desc { padding-left: 16px; line-height: 1.5; }
+  .subtotal-row td {
+    background: #1a3a5c;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 16px;
+    text-align: right;
+  }
+  .subtotal-row td:first-child {
+    text-align: center;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+
+  /* GARANTIA */
+  .garantia {
+    margin: 12px 20px 0;
+    background: #fffce8;
+    border-left: 4px solid #f0c000;
+    padding: 8px 14px;
+    font-size: 10.5px;
+    color: #5a4a00;
+    border-radius: 0 4px 4px 0;
+    line-height: 1.5;
+  }
+
+  /* VALIDEZ */
+  .validez {
+    margin: 10px 20px 0;
+    background: #c0392b;
+    color: #fff;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 900;
+    padding: 9px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  /* PAGOS */
+  .pagos {
+    display: flex;
+    gap: 12px;
+    padding: 14px 20px 0;
+  }
+  .banco {
+    flex: 1;
+    background: #eef4ff;
+    border: 0.5px solid #b5d0f5;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .banco-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1a3a5c;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .banco-name::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #1a3a5c;
+  }
+  .banco p { font-size: 10.5px; color: #444; line-height: 1.7; }
+  .banco .acct { font-weight: 700; color: #111; font-family: monospace; font-size: 11px; }
+  .banco .titular { color: #777; font-size: 10px; margin-top: 2px; }
+
+  /* CONDICIONES */
+  .condiciones {
+    margin: 14px 20px 0;
+    padding: 12px 14px;
+    background: #f9fafb;
+    border: 0.5px solid #e5e7eb;
+    border-radius: 6px;
+  }
+  .condiciones-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #1a3a5c;
+    text-align: center;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .condiciones ul { padding-left: 16px; }
+  .condiciones li { font-size: 10px; color: #555; margin-bottom: 4px; line-height: 1.5; }
+
+  /* FOOTER LOGOS */
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px 14px;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 14px;
+  }
+  .brand-logos {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .brand-pill {
+    font-size: 9px;
+    font-weight: 800;
+    border: 0.5px solid;
+    border-radius: 3px;
+    padding: 2px 6px;
+    letter-spacing: 0.3px;
+  }
+  .p-hik { color: #c0392b; border-color: #c0392b; }
+  .p-dah { color: #e67e22; border-color: #e67e22; }
+  .p-uni { color: #1a3a5c; border-color: #1a3a5c; }
+  .p-fza { color: #27ae60; border-color: #27ae60; }
+  .p-heg { color: #8e44ad; border-color: #8e44ad; }
+  .footer-date { font-size: 10px; color: #aaa; }
+
+  /* PRINT BTN */
+  .actions {
+    max-width: 720px;
+    margin: 16px auto 0;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .btn {
+    padding: 11px 28px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: 0.88; }
+  .btn-primary { background: #1a3a5c; color: #fff; }
+  .btn-whatsapp { background: #25d366; color: #fff; }
+  .btn-wa-icon { font-size: 15px; vertical-align: -2px; margin-right: 5px; }
+
+  /* EMPTY STATE */
+  .empty {
+    padding: 40px;
+    text-align: center;
+    color: #aaa;
+    font-size: 13px;
+  }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .actions { display: none; }
+    .page { box-shadow: none; }
+  }
+
+  @media (max-width: 480px) {
+    .pagos { flex-direction: column; }
+    .header { flex-direction: column; gap: 12px; }
+    .brand-block { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+// ── Leer parámetros de la URL ──────────────────────────────────────────
+function getParams() {
+  const p = new URLSearchParams(window.location.search);
+  // cliente
+  const cliente = p.get('cliente') || 'Sin nombre';
+  const tel     = p.get('tel')     || '';
+  const fecha   = p.get('fecha')   || new Date().toLocaleDateString('es-PE');
+
+  // items: formato items=Nombre|precio|cantidad,Nombre2|precio2|cantidad2
+  const itemsRaw = p.get('items') || '';
+  const items = itemsRaw ? itemsRaw.split(',').map(i => {
+    const [nombre, precio, cantidad] = i.split('|');
+    return {
+      nombre:   decodeURIComponent(nombre  || ''),
+      precio:   parseFloat(precio  || 0),
+      cantidad: parseInt(cantidad  || 1),
+    };
+  }) : [];
+
+  return { cliente, tel, fecha, items };
+}
+
+// ── Formatear soles ─────────────────────────────────────────────────────
+function sol(n) {
+  return 'S/ ' + parseFloat(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+// ── Construir HTML del documento ────────────────────────────────────────
+function buildProforma({ cliente, tel, fecha, items }) {
+  const subtotal = items.reduce((s, i) => s + i.precio * i.cantidad, 0);
+
+  const filas = items.length === 0
+    ? `<tr><td colspan="5" class="empty">No hay productos en el pedido</td></tr>`
+    : items.map((item, idx) => `
+        <tr>
+          <td class="num">${idx + 1}</td>
+          <td class="desc">${item.nombre}</td>
+          <td class="cant">${item.cantidad}</td>
+          <td class="unit">${sol(item.precio)}</td>
+          <td class="total">${sol(item.precio * item.cantidad)}</td>
+        </tr>`).join('');
+
+  return `
+  <div class="page">
+
+    <div class="header">
+      <div class="header-left">
+        <svg class="logo-shield" viewBox="0 0 100 115" xmlns="http://www.w3.org/2000/svg">
+          <path d="M50 5 L90 20 L90 60 Q90 90 50 110 Q10 90 10 60 L10 20 Z" fill="#f0f4f8" stroke="#1a3a5c" stroke-width="4"/>
+          <line x1="50" y1="5" x2="50" y2="110" stroke="#2e86ab" stroke-width="2.5"/>
+          <line x1="10" y1="57" x2="90" y2="57" stroke="#2e86ab" stroke-width="2.5"/>
+          <rect x="18" y="22" width="20" height="12" rx="2" fill="#2e86ab"/>
+          <rect x="16" y="34" width="5" height="8" rx="1" fill="#1a3a5c"/>
+          <circle cx="40" cy="28" r="3" fill="#1a3a5c"/>
+          <circle cx="70" cy="35" r="10" fill="#e67e22" opacity="0.9"/>
+          <line x1="70" y1="22" x2="70" y2="19" stroke="#e67e22" stroke-width="2"/>
+          <line x1="80" y1="27" x2="82" y2="25" stroke="#e67e22" stroke-width="2"/>
+          <line x1="83" y1="37" x2="86" y2="37" stroke="#e67e22" stroke-width="2"/>
+          <rect x="62" y="44" width="16" height="5" rx="2" fill="#e67e22"/>
+          <path d="M20,70 L30,60 L40,70 L20,70 Z" fill="#2e86ab"/>
+          <rect x="25" y="70" width="10" height="12" rx="1" fill="#2e86ab"/>
+          <rect x="58" y="63" width="18" height="26" rx="3" fill="#e67e22"/>
+          <rect x="62" y="67" width="10" height="8" rx="1" fill="#1a3a5c"/>
+          <rect x="64" y="78" width="6" height="3" rx="1" fill="#fff" opacity="0.7"/>
+        </svg>
+        <div class="client-block">
+          <div class="label">Cliente</div>
+          <div class="client-name">${cliente}</div>
+          ${tel ? `<div>Tel: ${tel}</div>` : ''}
+        </div>
+      </div>
+      <div class="brand-block">
+        <div class="brand-name">FLOSAL</div>
+        <div class="brand-sub">SOLUCIONES TECNOLÓGICAS</div>
+        <div class="brand-phones">941144164 &nbsp;·&nbsp; 932596249</div>
+        <div class="brand-corp">CORPORACION RJ FLORIAN SAC</div>
+        <div class="proforma-badge">PROFORMA</div>
+      </div>
+    </div>
+
+    <div class="date-row">Fecha: <span>${fecha}</span> &nbsp;·&nbsp; RUC: <span>20603969538</span></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="num">N°</th>
+            <th class="desc">Descripción</th>
+            <th class="cant">Cant.</th>
+            <th class="unit">P. Unit.</th>
+            <th class="total">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filas}
+          <tr class="subtotal-row">
+            <td colspan="4">SUBTOTAL</td>
+            <td>${sol(subtotal)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="garantia">
+      ⚠️ La garantía de equipos es de 24 meses por desperfectos de fábrica, mas no por daños causados por sobretensión y/o vandalismo.
+    </div>
+
+    <div class="validez">PROFORMA VÁLIDA POR 10 DÍAS &nbsp;—&nbsp; NO INCLUYE IGV</div>
+
+    <div class="pagos">
+      <div class="banco">
+        <div class="banco-name">Interbank</div>
+        <p>Cta. Simple Soles: <span class="acct">898 3484370550</span></p>
+        <p>CCI: <span class="acct">003898013484370550 47</span></p>
+        <p class="titular">A nombre de: Alida Judith Placencia Diaz</p>
+      </div>
+      <div class="banco">
+        <div class="banco-name">Scotiabank</div>
+        <p>Cta. Ahorro Soles: <span class="acct">0060877834</span></p>
+        <p>CCI: <span class="acct">00909220006087783484</span></p>
+        <p>PLIN: <span class="acct">993 632 384</span></p>
+        <p class="titular">A nombre de: Kati Florian Paulino</p>
+      </div>
+    </div>
+
+    <div class="condiciones">
+      <div class="condiciones-title">Condiciones Comerciales</div>
+      <ul>
+        <li>Los precios se entienden en moneda nacional (Soles).</li>
+        <li>Se requiere anticipo del 50% para iniciar despachos; saldo al recibir los equipos.</li>
+        <li>Tiempo de entrega e instalación: 3 a 8 días calendario desde el pago del anticipo.</li>
+        <li>Por ningún concepto se realizará devolución del dinero.</li>
+        <li>En caso de requerirse obras civiles o eléctricas, estas correrán por cuenta del cliente.</li>
+        <li>En caso de trabajo en altura, el cliente proporcionará andamios de requerirse.</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      <div class="brand-logos">
+        <span class="brand-pill p-hik">HIKVISION</span>
+        <span class="brand-pill p-dah">Dahua</span>
+        <span class="brand-pill p-heg">HEGROV</span>
+        <span class="brand-pill p-uni">UniFi</span>
+        <span class="brand-pill p-fza">FORZA</span>
+      </div>
+      <div class="footer-date" id="footer-date"></div>
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+    <button class="btn btn-whatsapp" onclick="compartirWhatsApp()">
+      <span class="btn-wa-icon">📲</span> Compartir por WhatsApp
+    </button>
+  </div>
+  `;
+}
+
+// ── WhatsApp share ──────────────────────────────────────────────────────
+function compartirWhatsApp() {
+  const p = getParams();
+  const subtotal = p.items.reduce((s, i) => s + i.precio * i.cantidad, 0);
+  const lineas = p.items.map((i, idx) =>
+    `${idx+1}. ${i.nombre} x${i.cantidad} → S/ ${(i.precio * i.cantidad).toFixed(2)}`
+  ).join('\n');
+
+  const msg = `🔒 *FLOSAL SEGURIDAD ELECTRÓNICA*\n`
+    + `━━━━━━━━━━━━━━━━━━━━\n`
+    + `📋 *PROFORMA DE PEDIDO*\n\n`
+    + `👤 Cliente: ${p.cliente}\n`
+    + `📅 Fecha: ${p.fecha}\n\n`
+    + `🛒 *PRODUCTOS:*\n${lineas}\n\n`
+    + `✅ *SUBTOTAL: S/ ${subtotal.toFixed(2)}*\n\n`
+    + `🏦 Interbank: 898 3484370550\n`
+    + `🏦 Scotiabank: 0060877834\n`
+    + `📱 PLIN: 993 632 384\n\n`
+    + `_Proforma válida por 10 días. No incluye IGV._`;
+
+  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+}
+
+// ── Render ──────────────────────────────────────────────────────────────
+const params = getParams();
+document.getElementById('app').innerHTML = buildProforma(params);
+document.getElementById('footer-date').textContent = params.fecha;
+</script>
+</body>
+</html>
