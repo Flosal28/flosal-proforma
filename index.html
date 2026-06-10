@@ -4,110 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Proforma FLOSAL</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Inter', Arial, sans-serif;
-    background: #f0f2f5;
-    min-height: 100vh;
-    padding: 20px;
-  }
-
-  .page {
-    background: #fff;
-    max-width: 720px;
-    margin: 0 auto;
-    border-radius: 4px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
-    overflow: hidden;
-  }
-
-  /* HEADER */
-  .header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    padding: 20px 28px 16px;
-    border-bottom: 3px solid #1a3a5c;
-  }
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-  .logo-shield {
-    width: 72px;
-    height: 72px;
-    flex-shrink: 0;
-  }
-  .client-block {
-    font-size: 12px;
-    color: #444;
-    line-height: 1.7;
-  }
-  .client-block .label {
-    font-size: 10px;
-    font-weight: 700;
-    color: #1a3a5c;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin-bottom: 2px;
-  }
-  .client-name {
-    font-size: 14px;
-    font-weight: 700;
-    color: #111;
-  }
-  .brand-block {
-    text-align: right;
-  }
-  .brand-name {
-    font-size: 28px;
-    font-weight: 900;
-    color: #c0392b;
-    letter-spacing: 2px;
-    line-height: 1;
-  }
+  body { font-family: 'Inter', Arial, sans-serif; background: #f0f2f5; min-height: 100vh; padding: 20px; }
+  .page { background: #fff; max-width: 720px; margin: 0 auto; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,0.10); overflow: hidden; }
+  .header { display: flex; align-items: flex-start; justify-content: space-between; padding: 20px 28px 16px; border-bottom: 3px solid #1a3a5c; }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo-shield { width: 72px; height: 72px; flex-shrink: 0; }
+  .client-block { font-size: 12px; color: #444; line-height: 1.7; }
+  .client-block .label { font-size: 10px; font-weight: 700; color: #1a3a5c; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 2px; }
+  .client-name { font-size: 14px; font-weight: 700; color: #111; }
+  .brand-block { text-align: right; }
+  .brand-name { font-size: 28px; font-weight: 900; color: #c0392b; letter-spacing: 2px; line-height: 1; }
   .brand-sub { font-size: 10px; font-weight: 700; color: #1a3a5c; margin-top: 2px; }
   .brand-phones { font-size: 11px; font-weight: 700; color: #1a3a5c; }
   .brand-corp { font-size: 10px; color: #1a3a5c; }
-  .proforma-badge {
-    display: inline-block;
-    margin-top: 6px;
-    background: #1a3a5c;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    padding: 3px 10px;
-    border-radius: 3px;
-  }
-
-  /* DATE */
-  .date-row {
-    background: #f7f8fa;
-    padding: 6px 28px;
-    font-size: 11px;
-    color: #888;
-    border-bottom: 0.5px solid #e5e7eb;
-  }
+  .proforma-badge { display: inline-block; margin-top: 6px; background: #1a3a5c; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 3px 10px; border-radius: 3px; }
+  .date-row { background: #f7f8fa; padding: 6px 28px; font-size: 11px; color: #888; border-bottom: 0.5px solid #e5e7eb; }
   .date-row span { font-weight: 600; color: #444; }
-
-  /* TABLE */
-  .table-wrap { padding: 0; }
   table { width: 100%; border-collapse: collapse; }
-  thead th {
-    background: #1a3a5c;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    padding: 8px 10px;
-    text-transform: uppercase;
-  }
+  thead th { background: #1a3a5c; color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; padding: 8px 10px; text-transform: uppercase; }
   thead th.desc { text-align: left; padding-left: 16px; }
   thead th.num { text-align: center; width: 36px; }
   thead th.cant { text-align: center; width: 56px; }
@@ -121,122 +39,24 @@
   tbody td.unit { text-align: right; }
   tbody td.total { text-align: right; font-weight: 600; padding-right: 16px; }
   tbody td.desc { padding-left: 16px; line-height: 1.5; }
-  .subtotal-row td {
-    background: #1a3a5c;
-    color: #fff;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 10px 16px;
-    text-align: right;
-  }
-  .subtotal-row td:first-child {
-    text-align: center;
-    font-size: 12px;
-    letter-spacing: 0.5px;
-  }
-
-  /* GARANTIA */
-  .garantia {
-    margin: 12px 20px 0;
-    background: #fffce8;
-    border-left: 4px solid #f0c000;
-    padding: 8px 14px;
-    font-size: 10.5px;
-    color: #5a4a00;
-    border-radius: 0 4px 4px 0;
-    line-height: 1.5;
-  }
-
-  /* VALIDEZ */
-  .validez {
-    margin: 10px 20px 0;
-    background: #c0392b;
-    color: #fff;
-    text-align: center;
-    font-size: 14px;
-    font-weight: 900;
-    padding: 9px;
-    border-radius: 4px;
-    letter-spacing: 0.5px;
-  }
-
-  /* PAGOS */
-  .pagos {
-    display: flex;
-    gap: 12px;
-    padding: 14px 20px 0;
-  }
-  .banco {
-    flex: 1;
-    background: #eef4ff;
-    border: 0.5px solid #b5d0f5;
-    border-radius: 6px;
-    padding: 10px 12px;
-  }
-  .banco-name {
-    font-size: 12px;
-    font-weight: 700;
-    color: #1a3a5c;
-    margin-bottom: 5px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .banco-name::before {
-    content: '';
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #1a3a5c;
-  }
+  .subtotal-row td { background: #1a3a5c; color: #fff; font-size: 13px; font-weight: 700; padding: 10px 16px; text-align: right; }
+  .subtotal-row td:first-child { text-align: center; font-size: 12px; letter-spacing: 0.5px; }
+  .garantia { margin: 12px 20px 0; background: #fffce8; border-left: 4px solid #f0c000; padding: 8px 14px; font-size: 10.5px; color: #5a4a00; border-radius: 0 4px 4px 0; line-height: 1.5; }
+  .validez { margin: 10px 20px 0; background: #c0392b; color: #fff; text-align: center; font-size: 14px; font-weight: 900; padding: 9px; border-radius: 4px; letter-spacing: 0.5px; }
+  .pagos { display: flex; gap: 12px; padding: 14px 20px 0; }
+  .banco { flex: 1; background: #eef4ff; border: 0.5px solid #b5d0f5; border-radius: 6px; padding: 10px 12px; }
+  .banco-name { font-size: 12px; font-weight: 700; color: #1a3a5c; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+  .banco-name::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #1a3a5c; }
   .banco p { font-size: 10.5px; color: #444; line-height: 1.7; }
   .banco .acct { font-weight: 700; color: #111; font-family: monospace; font-size: 11px; }
   .banco .titular { color: #777; font-size: 10px; margin-top: 2px; }
-
-  /* CONDICIONES */
-  .condiciones {
-    margin: 14px 20px 0;
-    padding: 12px 14px;
-    background: #f9fafb;
-    border: 0.5px solid #e5e7eb;
-    border-radius: 6px;
-  }
-  .condiciones-title {
-    font-size: 11px;
-    font-weight: 700;
-    color: #1a3a5c;
-    text-align: center;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
+  .condiciones { margin: 14px 20px 0; padding: 12px 14px; background: #f9fafb; border: 0.5px solid #e5e7eb; border-radius: 6px; }
+  .condiciones-title { font-size: 11px; font-weight: 700; color: #1a3a5c; text-align: center; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
   .condiciones ul { padding-left: 16px; }
   .condiciones li { font-size: 10px; color: #555; margin-bottom: 4px; line-height: 1.5; }
-
-  /* FOOTER LOGOS */
-  .footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 20px 14px;
-    border-top: 1px solid #e5e7eb;
-    margin-top: 14px;
-  }
-  .brand-logos {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  .brand-pill {
-    font-size: 9px;
-    font-weight: 800;
-    border: 0.5px solid;
-    border-radius: 3px;
-    padding: 2px 6px;
-    letter-spacing: 0.3px;
-  }
+  .footer { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px 14px; border-top: 1px solid #e5e7eb; margin-top: 14px; }
+  .brand-logos { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .brand-pill { font-size: 9px; font-weight: 800; border: 0.5px solid; border-radius: 3px; padding: 2px 6px; letter-spacing: 0.3px; }
   .p-hik { color: #c0392b; border-color: #c0392b; }
   .p-dah { color: #e67e22; border-color: #e67e22; }
   .p-uni { color: #1a3a5c; border-color: #1a3a5c; }
@@ -244,87 +64,69 @@
   .p-heg { color: #8e44ad; border-color: #8e44ad; }
   .footer-date { font-size: 10px; color: #aaa; }
 
-  /* PRINT BTN */
-  .actions {
-    max-width: 720px;
-    margin: 16px auto 0;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-  }
-  .btn {
-    padding: 11px 28px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: opacity 0.15s;
-  }
-  .btn:hover { opacity: 0.88; }
-  .btn-primary { background: #1a3a5c; color: #fff; }
-  .btn-whatsapp { background: #25d366; color: #fff; }
-  .btn-wa-icon { font-size: 15px; vertical-align: -2px; margin-right: 5px; }
+  /* BOTONES */
+  .actions { max-width: 720px; margin: 16px auto 32px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn { padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; display: flex; align-items: center; gap: 8px; }
+  .btn:hover { transform: translateY(-1px); opacity: 0.92; }
+  .btn:active { transform: scale(0.98); }
+  .btn-pdf { background: #1a3a5c; color: #fff; }
+  .btn-whatsapp { background: #25d366; color: #fff; font-size: 15px; padding: 12px 28px; }
 
-  /* EMPTY STATE */
-  .empty {
-    padding: 40px;
-    text-align: center;
-    color: #aaa;
-    font-size: 13px;
-  }
+  /* OVERLAY de carga */
+  #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
+  #overlay.show { display: flex; }
+  .spinner { width: 44px; height: 44px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #25d366; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .overlay-text { color: #fff; font-size: 15px; font-weight: 500; }
 
   @media print {
     body { background: #fff; padding: 0; }
-    .actions { display: none; }
+    .actions, #overlay { display: none !important; }
     .page { box-shadow: none; }
   }
-
   @media (max-width: 480px) {
     .pagos { flex-direction: column; }
     .header { flex-direction: column; gap: 12px; }
     .brand-block { text-align: left; }
+    .btn { font-size: 13px; padding: 11px 18px; }
   }
 </style>
 </head>
 <body>
 
+<div id="overlay">
+  <div class="spinner"></div>
+  <div class="overlay-text" id="overlay-text">Generando PDF...</div>
+</div>
+
 <div id="app"></div>
 
 <script>
-// ── Leer parámetros de la URL ──────────────────────────────────────────
 function getParams() {
   const p = new URLSearchParams(window.location.search);
-  // cliente
   const cliente = p.get('cliente') || 'Sin nombre';
   const tel     = p.get('tel')     || '';
   const fecha   = p.get('fecha')   || new Date().toLocaleDateString('es-PE');
-
-  // items: formato items=Nombre|precio|cantidad,Nombre2|precio2|cantidad2
   const itemsRaw = p.get('items') || '';
   const items = itemsRaw ? itemsRaw.split(',').map(i => {
-    const [nombre, precio, cantidad] = i.split('|');
+    const parts = i.split('|');
     return {
-      nombre:   decodeURIComponent(nombre  || ''),
-      precio:   parseFloat(precio  || 0),
-      cantidad: parseInt(cantidad  || 1),
+      nombre:   decodeURIComponent(parts[0] || ''),
+      precio:   parseFloat(parts[1] || 0),
+      cantidad: parseInt(parts[2] || 1),
     };
   }) : [];
-
   return { cliente, tel, fecha, items };
 }
 
-// ── Formatear soles ─────────────────────────────────────────────────────
 function sol(n) {
   return 'S/ ' + parseFloat(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-// ── Construir HTML del documento ────────────────────────────────────────
 function buildProforma({ cliente, tel, fecha, items }) {
   const subtotal = items.reduce((s, i) => s + i.precio * i.cantidad, 0);
-
   const filas = items.length === 0
-    ? `<tr><td colspan="5" class="empty">No hay productos en el pedido</td></tr>`
+    ? `<tr><td colspan="5" style="padding:20px;text-align:center;color:#aaa;">No hay productos</td></tr>`
     : items.map((item, idx) => `
         <tr>
           <td class="num">${idx + 1}</td>
@@ -335,8 +137,7 @@ function buildProforma({ cliente, tel, fecha, items }) {
         </tr>`).join('');
 
   return `
-  <div class="page">
-
+  <div class="page" id="proforma-content">
     <div class="header">
       <div class="header-left">
         <svg class="logo-shield" viewBox="0 0 100 115" xmlns="http://www.w3.org/2000/svg">
@@ -374,31 +175,26 @@ function buildProforma({ cliente, tel, fecha, items }) {
 
     <div class="date-row">Fecha: <span>${fecha}</span> &nbsp;·&nbsp; RUC: <span>20603969538</span></div>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th class="num">N°</th>
-            <th class="desc">Descripción</th>
-            <th class="cant">Cant.</th>
-            <th class="unit">P. Unit.</th>
-            <th class="total">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${filas}
-          <tr class="subtotal-row">
-            <td colspan="4">SUBTOTAL</td>
-            <td>${sol(subtotal)}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <table>
+      <thead>
+        <tr>
+          <th class="num">N°</th>
+          <th class="desc">Descripción</th>
+          <th class="cant">Cant.</th>
+          <th class="unit">P. Unit.</th>
+          <th class="total">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${filas}
+        <tr class="subtotal-row">
+          <td colspan="4">SUBTOTAL</td>
+          <td>${sol(subtotal)}</td>
+        </tr>
+      </tbody>
+    </table>
 
-    <div class="garantia">
-      ⚠️ La garantía de equipos es de 24 meses por desperfectos de fábrica, mas no por daños causados por sobretensión y/o vandalismo.
-    </div>
-
+    <div class="garantia">⚠️ La garantía de equipos es de 24 meses por desperfectos de fábrica, mas no por daños causados por sobretensión y/o vandalismo.</div>
     <div class="validez">PROFORMA VÁLIDA POR 10 DÍAS &nbsp;—&nbsp; NO INCLUYE IGV</div>
 
     <div class="pagos">
@@ -437,47 +233,108 @@ function buildProforma({ cliente, tel, fecha, items }) {
         <span class="brand-pill p-uni">UniFi</span>
         <span class="brand-pill p-fza">FORZA</span>
       </div>
-      <div class="footer-date" id="footer-date"></div>
+      <div class="footer-date">${fecha}</div>
     </div>
-
   </div>
 
   <div class="actions">
-    <button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
-    <button class="btn btn-whatsapp" onclick="compartirWhatsApp()">
-      <span class="btn-wa-icon">📲</span> Compartir por WhatsApp
-    </button>
+    <button class="btn btn-pdf" onclick="descargarPDF()">🖨️ Descargar PDF</button>
+    <button class="btn btn-whatsapp" onclick="enviarWhatsApp()">📲 Enviar por WhatsApp</button>
   </div>
   `;
 }
 
-// ── WhatsApp share ──────────────────────────────────────────────────────
-function compartirWhatsApp() {
-  const p = getParams();
-  const subtotal = p.items.reduce((s, i) => s + i.precio * i.cantidad, 0);
-  const lineas = p.items.map((i, idx) =>
-    `${idx+1}. ${i.nombre} x${i.cantidad} → S/ ${(i.precio * i.cantidad).toFixed(2)}`
-  ).join('\n');
+// ── Generar PDF con html2pdf ────────────────────────────────────────────
+function getPDFOptions(filename) {
+  return {
+    margin: [8, 8, 8, 8],
+    filename: filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all'] }
+  };
+}
 
-  const msg = `🔒 *FLOSAL SEGURIDAD ELECTRÓNICA*\n`
-    + `━━━━━━━━━━━━━━━━━━━━\n`
-    + `📋 *PROFORMA DE PEDIDO*\n\n`
-    + `👤 Cliente: ${p.cliente}\n`
-    + `📅 Fecha: ${p.fecha}\n\n`
-    + `🛒 *PRODUCTOS:*\n${lineas}\n\n`
-    + `✅ *SUBTOTAL: S/ ${subtotal.toFixed(2)}*\n\n`
-    + `🏦 Interbank: 898 3484370550\n`
-    + `🏦 Scotiabank: 0060877834\n`
-    + `📱 PLIN: 993 632 384\n\n`
-    + `_Proforma válida por 10 días. No incluye IGV._`;
+function mostrarOverlay(texto) {
+  document.getElementById('overlay-text').textContent = texto;
+  document.getElementById('overlay').classList.add('show');
+}
+function ocultarOverlay() {
+  document.getElementById('overlay').classList.remove('show');
+}
 
-  window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+async function descargarPDF() {
+  const params = getParams();
+  const filename = `Proforma_FLOSAL_${params.cliente.replace(/\s+/g,'_')}.pdf`;
+  mostrarOverlay('Generando PDF...');
+  try {
+    await html2pdf().set(getPDFOptions(filename)).from(document.getElementById('proforma-content')).save();
+  } finally {
+    ocultarOverlay();
+  }
+}
+
+async function enviarWhatsApp() {
+  const params = getParams();
+  const filename = `Proforma_FLOSAL_${params.cliente.replace(/\s+/g,'_')}.pdf`;
+
+  mostrarOverlay('Generando PDF...');
+
+  try {
+    // 1. Generar el blob del PDF
+    const blob = await html2pdf()
+      .set(getPDFOptions(filename))
+      .from(document.getElementById('proforma-content'))
+      .outputPdf('blob');
+
+    ocultarOverlay();
+
+    // 2. Intentar Web Share API (Android Chrome soporta compartir archivos)
+    if (navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'application/pdf' })] })) {
+      mostrarOverlay('Abriendo WhatsApp...');
+      const file = new File([blob], filename, { type: 'application/pdf' });
+      await navigator.share({
+        files: [file],
+        title: 'Proforma FLOSAL',
+        text: 'Adjunto encontrarás la proforma de tu pedido. FLOSAL Seguridad Electrónica.',
+      });
+      ocultarOverlay();
+    } else {
+      // Fallback: descargar PDF + abrir WhatsApp con mensaje
+      ocultarOverlay();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      setTimeout(() => {
+        const subtotal = params.items.reduce((s, i) => s + i.precio * i.cantidad, 0);
+        const msg = `🔒 *FLOSAL SEGURIDAD ELECTRÓNICA*\n`
+          + `📋 *PROFORMA DE PEDIDO*\n\n`
+          + `👤 Cliente: ${params.cliente}\n`
+          + `📅 Fecha: ${params.fecha}\n\n`
+          + `✅ *SUBTOTAL: S/ ${subtotal.toFixed(2)}*\n\n`
+          + `📎 _PDF descargado en tu dispositivo — adjúntalo a este chat_\n\n`
+          + `🏦 Interbank: 898 3484370550\n`
+          + `🏦 Scotiabank: 0060877834\n`
+          + `📱 PLIN: 993 632 384\n\n`
+          + `_Proforma válida por 10 días. No incluye IGV._`;
+        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+      }, 1000);
+    }
+  } catch (err) {
+    ocultarOverlay();
+    alert('Error al generar el PDF. Usa el botón "Descargar PDF" y compártelo manualmente por WhatsApp.');
+    console.error(err);
+  }
 }
 
 // ── Render ──────────────────────────────────────────────────────────────
 const params = getParams();
 document.getElementById('app').innerHTML = buildProforma(params);
-document.getElementById('footer-date').textContent = params.fecha;
 </script>
 </body>
 </html>
