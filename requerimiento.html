@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Requerimiento Técnico FLOSAL</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', Arial, sans-serif; background: #f0f2f5; min-height: 100vh; padding: 20px; }
+
+  /* MODO FORMULARIO (editable) */
+  .form-card {
+    background: #fff;
+    max-width: 720px;
+    margin: 0 auto 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    overflow: hidden;
+  }
+  .form-header {
+    background: #1a3a5c;
+    color: #fff;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .form-header img { width: 52px; height: 52px; object-fit: contain; }
+  .form-header-text h1 { font-size: 16px; font-weight: 700; }
+  .form-header-text p { font-size: 11px; opacity: 0.8; margin-top: 2px; }
+  .form-body { padding: 20px 24px; }
+  .form-section { margin-bottom: 20px; }
+  .form-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #1a3a5c;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  .form-row { display: flex; gap: 12px; margin-bottom: 12px; }
+  .form-group { flex: 1; }
+  .form-group label { display: block; font-size: 11px; font-weight: 600; color: #555; margin-bottom: 4px; }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 13px;
+    font-family: 'Inter', Arial, sans-serif;
+    color: #222;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus, .form-group textarea:focus { border-color: #1a3a5c; }
+  .form-group textarea { resize: vertical; min-height: 100px; max-height: 200px; line-height: 1.6; }
+
+  /* FOTOS */
+  .fotos-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .foto-slot {
+    aspect-ratio: 1;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    background: #f9fafb;
+    transition: border-color 0.15s;
+  }
+  .foto-slot:hover { border-color: #1a3a5c; }
+  .foto-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    inset: 0;
+  }
+  .foto-slot .foto-icon { font-size: 22px; color: #9ca3af; }
+  .foto-slot .foto-label { font-size: 9px; color: #9ca3af; margin-top: 3px; }
+  .foto-slot input[type=file] { display: none; }
+  .foto-remove {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  .foto-slot.has-img .foto-remove { display: flex; }
+  .foto-slot.has-img .foto-icon, .foto-slot.has-img .foto-label { display: none; }
+
+  /* ACCIONES DEL FORMULARIO */
+  .form-actions {
+    display: flex;
+    gap: 10px;
+    padding: 16px 24px;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+  }
+  .btn {
+    padding: 11px 22px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-primary { background: #1a3a5c; color: #fff; }
+  .btn-whatsapp { background: #25d366; color: #fff; }
+  .btn-preview { background: #f0f2f5; color: #333; border: 1px solid #d1d5db; }
+
+  /* OVERLAY */
+  #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 999; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
+  #overlay.show { display: flex; }
+  .spinner { width: 44px; height: 44px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #25d366; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .overlay-text { color: #fff; font-size: 15px; font-weight: 500; }
+
+  /* ─── MODO PDF (oculto hasta generar) ─── */
+  #pdf-content { display: none; }
+  .page {
+    background: #fff;
+    max-width: 720px;
+    margin: 0 auto;
+    font-family: 'Inter', Arial, sans-serif;
+    font-size: 12px;
+    color: #222;
+  }
+  .page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 18px 24px 14px;
+    border-bottom: 3px solid #1a3a5c;
+  }
+  .page-header-left { display: flex; align-items: center; gap: 12px; }
+  .page-logo { width: 64px; height: 64px; object-fit: contain; }
+  .page-cliente .label { font-size: 9px; font-weight: 700; color: #1a3a5c; text-transform: uppercase; letter-spacing: 0.5px; }
+  .page-cliente .nombre { font-size: 14px; font-weight: 700; color: #111; }
+  .page-cliente .detalle { font-size: 11px; color: #555; line-height: 1.6; }
+  .page-brand { text-align: right; }
+  .page-brand .brand-name { font-size: 26px; font-weight: 900; color: #c0392b; letter-spacing: 2px; }
+  .page-brand .brand-sub { font-size: 10px; font-weight: 700; color: #1a3a5c; }
+  .page-brand .brand-phones { font-size: 10px; font-weight: 700; color: #1a3a5c; }
+  .page-brand .badge { display: inline-block; margin-top: 5px; background: #1a3a5c; color: #fff; font-size: 9px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border-radius: 3px; }
+  .page-meta { background: #f7f8fa; padding: 5px 24px; font-size: 10px; color: #888; border-bottom: 0.5px solid #e5e7eb; }
+  .page-meta span { font-weight: 600; color: #444; }
+  .section { padding: 12px 24px 0; }
+  .section-title { font-size: 10px; font-weight: 700; color: #1a3a5c; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 5px; border-bottom: 1.5px solid #1a3a5c; margin-bottom: 8px; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; margin-bottom: 4px; }
+  .info-item .info-label { font-size: 9px; font-weight: 700; color: #888; text-transform: uppercase; }
+  .info-item .info-val { font-size: 12px; color: #222; margin-top: 1px; }
+  .requerimiento-box {
+    background: #f7f8fa;
+    border: 0.5px solid #e5e7eb;
+    border-radius: 5px;
+    padding: 10px 12px;
+    font-size: 11px;
+    color: #333;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    margin-bottom: 4px;
+  }
+  .fotos-pdf-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .foto-pdf {
+    aspect-ratio: 1;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 0.5px solid #e5e7eb;
+  }
+  .foto-pdf img { width: 100%; height: 100%; object-fit: cover; }
+  .firma-section {
+    display: flex;
+    gap: 24px;
+    padding: 14px 24px;
+    margin-top: 8px;
+  }
+  .firma-box {
+    flex: 1;
+    border-top: 1.5px solid #333;
+    padding-top: 6px;
+    text-align: center;
+    font-size: 10px;
+    color: #666;
+  }
+  .page-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 24px 12px;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 10px;
+  }
+  .brand-logos { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+  .brand-pill { font-size: 8px; font-weight: 800; border: 0.5px solid; border-radius: 3px; padding: 2px 5px; }
+  .p-hik { color: #c0392b; border-color: #c0392b; }
+  .p-dah { color: #e67e22; border-color: #e67e22; }
+  .p-uni { color: #1a3a5c; border-color: #1a3a5c; }
+  .p-fza { color: #27ae60; border-color: #27ae60; }
+  .p-heg { color: #8e44ad; border-color: #8e44ad; }
+
+  @media (max-width: 500px) {
+    .fotos-grid { grid-template-columns: repeat(3, 1fr); }
+    .form-row { flex-direction: column; }
+    .btn { font-size: 12px; padding: 10px 14px; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .form-card, #overlay { display: none !important; }
+    #pdf-content { display: block !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="overlay">
+  <div class="spinner"></div>
+  <div class="overlay-text" id="overlay-text">Generando PDF...</div>
+</div>
+
+<!-- ─── FORMULARIO ─────────────────────────────────────────────────── -->
+<div class="form-card" id="formulario">
+  <div class="form-header">
+    <img src="https://i.imgur.com/vKZVImG.png" alt="FLOSAL Logo" />
+    <div class="form-header-text">
+      <h1>Requerimiento Técnico</h1>
+      <p>FLOSAL Seguridad Electrónica — Corporación RJ Florian SAC</p>
+    </div>
+  </div>
+
+  <div class="form-body">
+
+    <div class="form-section">
+      <div class="form-section-title">Datos del Cliente</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre completo *</label>
+          <input type="text" id="f-nombre" placeholder="Ej: Carlos Mamani Quispe" />
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="tel" id="f-telefono" placeholder="Ej: 987654321" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Dirección *</label>
+          <input type="text" id="f-direccion" placeholder="Ej: Av. Los Olivos 123, San Martín de Porres" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Distrito</label>
+          <input type="text" id="f-distrito" placeholder="Ej: Los Olivos" />
+        </div>
+        <div class="form-group">
+          <label>Técnico responsable</label>
+          <input type="text" id="f-tecnico" placeholder="Nombre del técnico" />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Requerimientos del Cliente</div>
+      <div class="form-group">
+        <label>Descripción detallada del requerimiento *</label>
+        <textarea id="f-requerimiento" rows="7" placeholder="Describe los requerimientos del cliente:&#10;- Número de cámaras solicitadas&#10;- Zonas a cubrir&#10;- Tipo de instalación&#10;- Observaciones del lugar&#10;- Condiciones especiales&#10;- Otros requerimientos..."></textarea>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">Fotos del Lugar (máx. 5)</div>
+      <div class="fotos-grid" id="fotos-grid">
+        <!-- generadas por JS -->
+      </div>
+    </div>
+
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" onclick="descargarPDF()">🖨️ Descargar PDF</button>
+    <button class="btn btn-whatsapp" onclick="enviarWhatsApp()">📲 Enviar por WhatsApp</button>
+  </div>
+</div>
+
+<!-- ─── CONTENIDO PDF (invisible, solo para html2pdf) ──────────────── -->
+<div id="pdf-content">
+  <div class="page" id="pdf-page">
+    <!-- se rellena por JS antes de generar -->
+  </div>
+</div>
+
+<script>
+// ── Fotos ────────────────────────────────────────────────────────────
+const MAX_FOTOS = 5;
+const fotosData = Array(MAX_FOTOS).fill(null); // base64 strings
+
+function renderFotoSlots() {
+  const grid = document.getElementById('fotos-grid');
+  grid.innerHTML = '';
+  for (let i = 0; i < MAX_FOTOS; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'foto-slot' + (fotosData[i] ? ' has-img' : '');
+    slot.dataset.idx = i;
+
+    if (fotosData[i]) {
+      const img = document.createElement('img');
+      img.src = fotosData[i];
+      slot.appendChild(img);
+      const btn = document.createElement('button');
+      btn.className = 'foto-remove';
+      btn.innerHTML = '✕';
+      btn.onclick = (e) => { e.stopPropagation(); fotosData[i] = null; renderFotoSlots(); };
+      slot.appendChild(btn);
+    } else {
+      slot.innerHTML = `<span class="foto-icon">📷</span><span class="foto-label">Foto ${i+1}</span>`;
+    }
+
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = 'image/*';
+    inp.onchange = (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => { fotosData[i] = ev.target.result; renderFotoSlots(); };
+      reader.readAsDataURL(file);
+    };
+    slot.appendChild(inp);
+    slot.onclick = () => { if (!fotosData[i]) inp.click(); };
+    grid.appendChild(slot);
+  }
+}
+renderFotoSlots();
+
+// ── Leer formulario ──────────────────────────────────────────────────
+function getDatos() {
+  return {
+    nombre:       document.getElementById('f-nombre').value.trim() || 'Sin nombre',
+    telefono:     document.getElementById('f-telefono').value.trim(),
+    direccion:    document.getElementById('f-direccion').value.trim() || 'Sin dirección',
+    distrito:     document.getElementById('f-distrito').value.trim(),
+    tecnico:      document.getElementById('f-tecnico').value.trim() || 'FLOSAL',
+    requerimiento:document.getElementById('f-requerimiento').value.trim() || 'Sin requerimiento',
+    fecha:        new Date().toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' }),
+    fotos:        fotosData.filter(Boolean),
+  };
+}
+
+// ── Construir PDF content ─────────────────────────────────────────────
+function buildPDFContent(d) {
+  const fotosHTML = d.fotos.length > 0
+    ? d.fotos.map(src => `
+        <div class="foto-pdf">
+          <img src="${src}" alt="Foto del lugar" />
+        </div>`).join('')
+    : '<p style="font-size:11px;color:#aaa;font-style:italic;">No se adjuntaron fotos</p>';
+
+  document.getElementById('pdf-page').innerHTML = `
+    <div class="page-header">
+      <div class="page-header-left">
+        <img class="page-logo" src="https://i.imgur.com/vKZVImG.png" crossorigin="anonymous" alt="FLOSAL" />
+        <div class="page-cliente">
+          <div class="label">Cliente</div>
+          <div class="nombre">${d.nombre}</div>
+          <div class="detalle">${d.direccion}${d.distrito ? ', ' + d.distrito : ''}</div>
+          ${d.telefono ? `<div class="detalle">Tel: ${d.telefono}</div>` : ''}
+        </div>
+      </div>
+      <div class="page-brand">
+        <div class="brand-name">FLOSAL</div>
+        <div class="brand-sub">SOLUCIONES TECNOLÓGICAS</div>
+        <div class="brand-phones">941144164 · 932596249</div>
+        <div class="brand-phones">CORPORACION RJ FLORIAN SAC</div>
+        <div class="badge">REQUERIMIENTO TÉCNICO</div>
+      </div>
+    </div>
+
+    <div class="page-meta">
+      Fecha: <span>${d.fecha}</span> &nbsp;·&nbsp;
+      Técnico: <span>${d.tecnico}</span> &nbsp;·&nbsp;
+      RUC: <span>20603969538</span>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Información del Cliente</div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">Nombre</div>
+          <div class="info-val">${d.nombre}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Teléfono</div>
+          <div class="info-val">${d.telefono || '—'}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Dirección</div>
+          <div class="info-val">${d.direccion}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">Distrito</div>
+          <div class="info-val">${d.distrito || '—'}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" style="margin-top:10px;">
+      <div class="section-title">Requerimientos del Cliente</div>
+      <div class="requerimiento-box">${d.requerimiento.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    </div>
+
+    <div class="section" style="margin-top:10px;">
+      <div class="section-title">Registro Fotográfico del Lugar</div>
+      <div class="fotos-pdf-grid">${fotosHTML}</div>
+    </div>
+
+    <div class="firma-section">
+      <div class="firma-box">
+        Firma del Cliente<br><br><br>
+        <strong>${d.nombre}</strong>
+      </div>
+      <div class="firma-box">
+        Firma del Técnico<br><br><br>
+        <strong>${d.tecnico}</strong>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <div class="brand-logos">
+        <span class="brand-pill p-hik">HIKVISION</span>
+        <span class="brand-pill p-dah">Dahua</span>
+        <span class="brand-pill p-heg">HEGROV</span>
+        <span class="brand-pill p-uni">UniFi</span>
+        <span class="brand-pill p-fza">FORZA</span>
+      </div>
+      <span style="font-size:9px;color:#aaa;">${d.fecha}</span>
+    </div>
+  `;
+}
+
+// ── PDF options ──────────────────────────────────────────────────────
+function getPDFOptions(filename) {
+  return {
+    margin: [6, 6, 6, 6],
+    filename,
+    image: { type: 'jpeg', quality: 0.97 },
+    html2canvas: { scale: 2, useCORS: true, allowTaint: true, imageTimeout: 15000, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['css', 'legacy'] }
+  };
+}
+
+function mostrarOverlay(t) { document.getElementById('overlay-text').textContent = t; document.getElementById('overlay').classList.add('show'); }
+function ocultarOverlay() { document.getElementById('overlay').classList.remove('show'); }
+
+// Precargar logo
+function precargarLogo() {
+  return new Promise(res => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = res; img.onerror = res;
+    img.src = 'https://i.imgur.com/vKZVImG.png';
+  });
+}
+
+async function descargarPDF() {
+  const d = getDatos();
+  const filename = `Requerimiento_FLOSAL_${d.nombre.replace(/\s+/g,'_')}.pdf`;
+  mostrarOverlay('Generando PDF...');
+  try {
+    buildPDFContent(d);
+    document.getElementById('pdf-content').style.display = 'block';
+    await precargarLogo();
+    await html2pdf().set(getPDFOptions(filename)).from(document.getElementById('pdf-page')).save();
+  } finally {
+    document.getElementById('pdf-content').style.display = 'none';
+    ocultarOverlay();
+  }
+}
+
+async function enviarWhatsApp() {
+  const d = getDatos();
+  const filename = `Requerimiento_FLOSAL_${d.nombre.replace(/\s+/g,'_')}.pdf`;
+  mostrarOverlay('Generando PDF...');
+  try {
+    buildPDFContent(d);
+    document.getElementById('pdf-content').style.display = 'block';
+    await precargarLogo();
+    const blob = await html2pdf().set(getPDFOptions(filename)).from(document.getElementById('pdf-page')).outputPdf('blob');
+    document.getElementById('pdf-content').style.display = 'none';
+    ocultarOverlay();
+
+    if (navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'application/pdf' })] })) {
+      mostrarOverlay('Abriendo WhatsApp...');
+      await navigator.share({
+        files: [new File([blob], filename, { type: 'application/pdf' })],
+        title: 'Requerimiento Técnico FLOSAL',
+        text: `Requerimiento técnico para ${d.nombre}. FLOSAL Seguridad Electrónica.`,
+      });
+      ocultarOverlay();
+    } else {
+      // Fallback: descargar + abrir WhatsApp
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+      setTimeout(() => {
+        const tel = d.telefono ? `52511${d.telefono.replace(/\D/g,'')}` : '';
+        const msg = `🔧 *REQUERIMIENTO TÉCNICO — FLOSAL*\n`
+          + `━━━━━━━━━━━━━━━━━━━━\n`
+          + `👤 Cliente: ${d.nombre}\n`
+          + `📍 Dirección: ${d.direccion}${d.distrito ? ', ' + d.distrito : ''}\n`
+          + `📅 Fecha: ${d.fecha}\n`
+          + `👷 Técnico: ${d.tecnico}\n\n`
+          + `📋 *Requerimientos:*\n${d.requerimiento}\n\n`
+          + `📎 _PDF adjunto descargado en su dispositivo_\n\n`
+          + `FLOSAL Seguridad Electrónica\n`
+          + `📞 941144164 · 932596249`;
+        const waUrl = tel
+          ? `https://wa.me/${tel}?text=${encodeURIComponent(msg)}`
+          : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+        window.open(waUrl, '_blank');
+      }, 1000);
+    }
+  } catch(err) {
+    document.getElementById('pdf-content').style.display = 'none';
+    ocultarOverlay();
+    alert('Error al generar el PDF. Intente de nuevo.');
+    console.error(err);
+  }
+}
+
+// Prellenar desde URL params si vienen de la app
+const p = new URLSearchParams(window.location.search);
+if (p.get('cliente')) document.getElementById('f-nombre').value = p.get('cliente');
+if (p.get('tel')) document.getElementById('f-telefono').value = p.get('tel');
+if (p.get('direccion')) document.getElementById('f-direccion').value = p.get('direccion');
+if (p.get('tecnico')) document.getElementById('f-tecnico').value = p.get('tecnico');
+</script>
+</body>
+</html>
