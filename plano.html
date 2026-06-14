@@ -82,19 +82,42 @@
     transform: translate(-50%, -50%);
   }
   .equip-item:active { cursor: grabbing; }
-  .equip-item .eicon { font-size: 28px; line-height: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3)); }
+  .equip-item .eicon {
+    font-size: 28px; line-height: 1;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+    transition: transform 0.15s;
+  }
   .equip-item .elabel {
     font-size: 9px; font-weight: 600; color: #1a3a5c;
     background: rgba(255,255,255,0.85); padding: 1px 4px; border-radius: 3px;
     margin-top: 2px; white-space: nowrap;
   }
-  .equip-item .edel {
-    position: absolute; top: -6px; right: -6px;
-    width: 16px; height: 16px; border-radius: 50%; background: #e94560;
-    color: #fff; font-size: 10px; font-weight: 700; border: none; cursor: pointer;
-    display: none; align-items: center; justify-content: center; line-height: 1;
+  /* Controles flotantes — aparecen al hover */
+  .equip-controls {
+    display: none;
+    position: absolute;
+    top: -28px; left: 50%; transform: translateX(-50%);
+    background: #16213e;
+    border: 1px solid #0f3460;
+    border-radius: 20px;
+    padding: 3px 5px;
+    gap: 3px;
+    align-items: center;
+    white-space: nowrap;
+    z-index: 20;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
   }
-  .equip-item:hover .edel { display: flex; }
+  .equip-item:hover .equip-controls { display: flex; }
+  .ctrl-btn {
+    width: 20px; height: 20px; border-radius: 50%; border: none;
+    background: #0f3460; color: #94a3b8; font-size: 11px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.1s;
+    padding: 0;
+  }
+  .ctrl-btn:hover { background: #e94560; color: #fff; }
+  .ctrl-del { background: #7f1d1d; color: #fca5a5; }
+  .ctrl-del:hover { background: #e94560; }
 
   #text-overlay { display: none; position: absolute; z-index: 20; }
   #text-field {
@@ -217,8 +240,42 @@
   <div class="sep"></div>
 
   <!-- Equipos: un clic = agrega 1 icono al centro, luego se arrastra -->
-  <div class="equip-btn" onclick="addEquip('📷','Cámara')" title="Agregar Cámara">📷<span>Cámara</span></div>
-  <div class="equip-btn" onclick="addEquip('🔵','Domo')" title="Agregar Domo">🔵<span>Domo</span></div>
+  <div class="equip-btn" onclick="addEquip('bullet','Bullet')" title="Agregar Cámara Bullet"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="32" height="32">
+  <!-- Soporte -->
+  <rect x="62" y="8" width="22" height="5" rx="2" fill="none" stroke="#1a3a5c" stroke-width="3.5" stroke-linecap="round"/>
+  <rect x="78" y="8" width="5" height="22" rx="2" fill="none" stroke="#1a3a5c" stroke-width="3.5" stroke-linecap="round"/>
+  <!-- Cuerpo principal -->
+  <path d="M15 42 Q14 30 28 28 L75 24 Q86 23 88 35 L88 58 Q88 70 75 70 L28 68 Q14 68 15 56 Z" fill="none" stroke="#1a3a5c" stroke-width="3.5" stroke-linejoin="round"/>
+  <!-- Lente frontal exterior -->
+  <ellipse cx="20" cy="49" rx="10" ry="13" fill="none" stroke="#1a3a5c" stroke-width="3.5"/>
+  <!-- Lente interior -->
+  <ellipse cx="20" cy="49" rx="6" ry="8" fill="none" stroke="#1a3a5c" stroke-width="2.5"/>
+  <!-- Líneas decorativas en el cuerpo -->
+  <line x1="45" y1="65" x2="75" y2="63" stroke="#1a3a5c" stroke-width="2" stroke-linecap="round"/>
+  <line x1="42" y1="72" x2="48" y2="71" stroke="#1a3a5c" stroke-width="2" stroke-linecap="round"/>
+  <!-- Conector trasero -->
+  <line x1="78" y1="30" x2="83" y2="30" stroke="#1a3a5c" stroke-width="3" stroke-linecap="round"/>
+</svg><span>Bullet</span></div>
+  <div class="equip-btn" onclick="addEquip('domo','Domo')" title="Agregar Domo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="32" height="32">
+  <!-- Cuerpo domo exterior -->
+  <path d="M10 55 Q10 20 50 18 Q90 20 90 55 L90 62 Q90 68 84 68 L16 68 Q10 68 10 62 Z" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3"/>
+  <!-- Base plana -->
+  <rect x="10" y="62" width="80" height="8" rx="3" fill="#d0d0d0" stroke="#1a3a5c" stroke-width="2.5"/>
+  <!-- Cúpula oscura interior -->
+  <path d="M25 55 Q25 32 50 30 Q75 32 75 55 L75 60 L25 60 Z" fill="#2a2a2a" stroke="#333" stroke-width="1.5"/>
+  <!-- Lente exterior -->
+  <circle cx="50" cy="50" r="14" fill="#111" stroke="#444" stroke-width="2"/>
+  <!-- Lente medio -->
+  <circle cx="50" cy="50" r="9" fill="#1a1a1a" stroke="#555" stroke-width="1.5"/>
+  <!-- Reflejo lente -->
+  <circle cx="50" cy="50" r="5" fill="#0a0a0a"/>
+  <circle cx="44" cy="44" r="2.5" fill="rgba(255,255,255,0.15)"/>
+  <!-- Tornillos laterales -->
+  <circle cx="22" cy="58" r="3" fill="#bbb" stroke="#999" stroke-width="1"/>
+  <circle cx="78" cy="58" r="3" fill="#bbb" stroke="#999" stroke-width="1"/>
+  <!-- Punto indicador LED -->
+  <circle cx="50" cy="65" r="2" fill="#555"/>
+</svg><span>Domo</span></div>
   <div class="equip-btn" onclick="addEquip('🚨','Alarma')" title="Agregar Alarma">🚨<span>Alarma</span></div>
   <div class="equip-btn" onclick="addEquip('📡','Router')" title="Agregar Router">📡<span>Router</span></div>
   <div class="equip-btn" onclick="addEquip('🔔','Portero')" title="Agregar Portero">🔔<span>Portero</span></div>
@@ -401,11 +458,49 @@ function addEquip(emoji, label) {
   el.style.left = cx+'px';
   el.style.top  = cy+'px';
 
+  // Determinar contenido del icono
+  let iconHTML = '';
+  if (emoji === 'bullet') {
+    iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="36" height="36">
+      <rect x="62" y="8" width="22" height="5" rx="2" fill="none" stroke="#1a3a5c" stroke-width="3.5" stroke-linecap="round"/>
+      <rect x="78" y="8" width="5" height="22" rx="2" fill="none" stroke="#1a3a5c" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M15 42 Q14 30 28 28 L75 24 Q86 23 88 35 L88 58 Q88 70 75 70 L28 68 Q14 68 15 56 Z" fill="none" stroke="#1a3a5c" stroke-width="3.5" stroke-linejoin="round"/>
+      <ellipse cx="20" cy="49" rx="10" ry="13" fill="none" stroke="#1a3a5c" stroke-width="3.5"/>
+      <ellipse cx="20" cy="49" rx="6" ry="8" fill="none" stroke="#1a3a5c" stroke-width="2.5"/>
+      <line x1="45" y1="65" x2="75" y2="63" stroke="#1a3a5c" stroke-width="2" stroke-linecap="round"/>
+    </svg>`;
+  } else if (emoji === 'domo') {
+    iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="36" height="36">
+      <path d="M10 55 Q10 20 50 18 Q90 20 90 55 L90 62 Q90 68 84 68 L16 68 Q10 68 10 62 Z" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3"/>
+      <rect x="10" y="62" width="80" height="8" rx="3" fill="#d0d0d0" stroke="#1a3a5c" stroke-width="2.5"/>
+      <path d="M25 55 Q25 32 50 30 Q75 32 75 55 L75 60 L25 60 Z" fill="#2a2a2a" stroke="#333" stroke-width="1.5"/>
+      <circle cx="50" cy="50" r="14" fill="#111" stroke="#444" stroke-width="2"/>
+      <circle cx="50" cy="50" r="9" fill="#1a1a1a" stroke="#555" stroke-width="1.5"/>
+      <circle cx="50" cy="50" r="5" fill="#0a0a0a"/>
+      <circle cx="44" cy="44" r="2.5" fill="rgba(255,255,255,0.15)"/>
+      <circle cx="22" cy="58" r="3" fill="#bbb" stroke="#999" stroke-width="1"/>
+      <circle cx="78" cy="58" r="3" fill="#bbb" stroke="#999" stroke-width="1"/>
+      <circle cx="50" cy="65" r="2" fill="#555"/>
+    </svg>`;
+  } else {
+    iconHTML = `<span style="font-size:28px;line-height:1;">${emoji}</span>`;
+  }
+
   el.innerHTML = `
-    <button class="edel" onclick="removeEquip('eq-${equipCnt}')">✕</button>
-    <div class="eicon">${emoji}</div>
+    <div class="equip-controls">
+      <button class="ctrl-btn" onclick="rotateEquip('eq-${equipCnt}',-45)" title="Girar izq">↺</button>
+      <button class="ctrl-btn" onclick="rotateEquip('eq-${equipCnt}',-15)" title="-15°">◁</button>
+      <button class="ctrl-btn" onclick="flipEquip('eq-${equipCnt}')" title="Voltear">⇄</button>
+      <button class="ctrl-btn" onclick="rotateEquip('eq-${equipCnt}',15)" title="+15°">▷</button>
+      <button class="ctrl-btn" onclick="rotateEquip('eq-${equipCnt}',45)" title="Girar der">↻</button>
+      <button class="ctrl-btn ctrl-del" onclick="removeEquip('eq-${equipCnt}')" title="Eliminar">✕</button>
+    </div>
+    <div class="eicon" id="icon-${equipCnt}">${iconHTML}</div>
     <div class="elabel">${label}</div>
   `;
+  // Guardar rotación y flip del ícono
+  el._rot  = 0;
+  el._flip = 1;
 
   // Drag logic
   let dragging=false, ox=0, oy=0;
@@ -440,6 +535,28 @@ function addEquip(emoji, label) {
   layer.appendChild(el);
 }
 
+function rotateEquip(id, deg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el._rot = ((el._rot || 0) + deg + 360) % 360;
+  applyEquipTransform(el);
+}
+
+function flipEquip(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el._flip = (el._flip || 1) * -1;
+  applyEquipTransform(el);
+}
+
+function applyEquipTransform(el) {
+  const iconEl = el.querySelector('.eicon');
+  if (!iconEl) return;
+  const rot  = el._rot  || 0;
+  const flip = el._flip || 1;
+  iconEl.style.transform = `rotate(${rot}deg) scaleX(${flip})`;
+}
+
 function removeEquip(id) {
   document.getElementById(id)?.remove();
 }
@@ -453,21 +570,62 @@ async function captureAll() {
 
   saveHistory();
 
-  items.forEach(el => {
-    const r   = el.getBoundingClientRect();
-    const x   = r.left - wrapR.left + r.width/2;
-    const y   = r.top  - wrapR.top  + r.height/2;
-    const ico = el.querySelector('.eicon').textContent;
-    const lbl = el.querySelector('.elabel').textContent;
-    ctx.font = '28px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(ico, x, y);
-    ctx.font = 'bold 10px Inter, Arial';
-    ctx.fillStyle = '#1a3a5c';
-    ctx.textBaseline = 'top';
-    ctx.fillText(lbl, x, y+16);
+  const renderPromises = Array.from(items).map(el => {
+    return new Promise(resolve => {
+      const r   = el.getBoundingClientRect();
+      const x   = r.left - wrapR.left + r.width/2;
+      const y   = r.top  - wrapR.top  + r.height/2;
+      const lbl = el.querySelector('.elabel').textContent;
+      const svgEl = el.querySelector('.eicon svg');
+
+      if (svgEl) {
+        // Renderizar SVG al canvas via imagen
+        const svgData = new XMLSerializer().serializeToString(svgEl);
+        const svgBlob = new Blob([svgData], {type:'image/svg+xml;charset=utf-8'});
+        const url = URL.createObjectURL(svgBlob);
+        const img = new Image();
+        img.onload = () => {
+          const rot  = el._rot  || 0;
+          const flip = el._flip || 1;
+          ctx.save();
+          ctx.translate(x, y);
+          ctx.rotate(rot * Math.PI / 180);
+          ctx.scale(flip, 1);
+          ctx.drawImage(img, -20, -20, 40, 40);
+          ctx.restore();
+          ctx.font = 'bold 10px Inter, Arial';
+          ctx.fillStyle = '#1a3a5c';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'top';
+          ctx.fillText(lbl, x, y+22);
+          URL.revokeObjectURL(url);
+          resolve();
+        };
+        img.onerror = () => resolve();
+        img.src = url;
+      } else {
+        const ico = el.querySelector('.eicon span')?.textContent || el.querySelector('.eicon')?.textContent || '';
+        const rot  = el._rot  || 0;
+        const flip = el._flip || 1;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot * Math.PI / 180);
+        ctx.scale(flip, 1);
+        ctx.font = '28px serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(ico, 0, 0);
+        ctx.restore();
+        ctx.font = 'bold 10px Inter, Arial';
+        ctx.fillStyle = '#1a3a5c';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(lbl, x, y+16);
+        resolve();
+      }
+    });
   });
+  await Promise.all(renderPromises);
 
   return canvas.toDataURL('image/jpeg', 0.95);
 }
