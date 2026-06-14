@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Plano de Instalación — FLOSAL</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; touch-action: none; }
+  body { font-family: 'Inter', sans-serif; background: #1a1a2e; min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* TOP BAR */
+  .topbar {
+    background: #16213e;
+    border-bottom: 1px solid #0f3460;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .topbar-logo { display: flex; align-items: center; gap: 8px; margin-right: 4px; }
+  .topbar-logo img { width: 32px; height: 32px; object-fit: contain; }
+  .topbar-title { font-size: 13px; font-weight: 700; color: #e2e8f0; white-space: nowrap; }
+  .topbar-client { font-size: 11px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+
+  /* TOOLBAR */
+  .toolbar {
+    background: #16213e;
+    border-bottom: 1px solid #0f3460;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .tool-group { display: flex; gap: 3px; align-items: center; padding-right: 8px; border-right: 1px solid #0f3460; margin-right: 4px; }
+  .tool-group:last-child { border-right: none; }
+  .tool-btn {
+    width: 36px; height: 36px;
+    border-radius: 7px;
+    border: 1.5px solid transparent;
+    background: #0f3460;
+    color: #94a3b8;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.12s;
+    position: relative;
+  }
+  .tool-btn:hover { background: #1a3a6c; color: #e2e8f0; }
+  .tool-btn.active { background: #e94560; border-color: #e94560; color: #fff; }
+  .tool-btn .tooltip {
+    display: none;
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0f3460;
+    color: #e2e8f0;
+    font-size: 10px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    z-index: 100;
+  }
+  .tool-btn:hover .tooltip { display: block; }
+
+  /* COLOR PICKER */
+  .color-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .color-btn:hover { transform: scale(1.15); }
+  .color-btn.active { border-color: #fff; transform: scale(1.15); }
+
+  /* STROKE SIZE */
+  .stroke-btn {
+    background: #0f3460;
+    border: 1.5px solid transparent;
+    border-radius: 6px;
+    padding: 4px 8px;
+    color: #94a3b8;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .stroke-btn.active { border-color: #e94560; color: #fff; }
+
+  /* EQUIPMENT ICONS */
+  .equip-icon {
+    width: 36px; height: 36px;
+    border-radius: 7px;
+    background: #0f3460;
+    border: 1.5px solid #1a3a6c;
+    cursor: pointer;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-size: 18px;
+    transition: all 0.12s;
+    position: relative;
+  }
+  .equip-icon:hover { background: #1a3a6c; border-color: #e94560; transform: scale(1.08); }
+  .equip-label { font-size: 7px; color: #64748b; margin-top: 1px; line-height: 1; }
+
+  /* CANVAS AREA */
+  .canvas-wrap {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #f8fafc;
+    cursor: crosshair;
+  }
+  #main-canvas {
+    position: absolute;
+    inset: 0;
+    touch-action: none;
+  }
+  /* Grid overlay */
+  .canvas-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(148,163,184,0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148,163,184,0.15) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* BOTTOM BAR */
+  .bottombar {
+    background: #16213e;
+    border-top: 1px solid #0f3460;
+    padding: 8px 12px;
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+    z-index: 10;
+    flex-wrap: wrap;
+  }
+  .action-btn {
+    flex: 1;
+    min-width: 100px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: opacity 0.15s;
+  }
+  .action-btn:hover { opacity: 0.88; }
+  .btn-clear { background: #374151; color: #9ca3af; }
+  .btn-undo { background: #374151; color: #9ca3af; }
+  .btn-pdf { background: #1a3a5c; color: #fff; }
+  .btn-wa { background: #25d366; color: #fff; }
+
+  /* TEXT INPUT OVERLAY */
+  #text-input-overlay {
+    display: none;
+    position: absolute;
+    z-index: 50;
+  }
+  #text-input-field {
+    background: rgba(255,255,255,0.95);
+    border: 2px solid #e94560;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    min-width: 150px;
+  }
+
+  /* OVERLAY */
+  #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 999; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
+  #overlay.show { display: flex; }
+  .spinner { width: 44px; height: 44px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #25d366; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .overlay-text { color: #fff; font-size: 15px; font-weight: 500; }
+
+  /* PDF CONTENT */
+  #pdf-content { display: none; background: #fff; }
+  .pdf-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 3px solid #1a3a5c; }
+  .pdf-header-left { display: flex; align-items: center; gap: 12px; }
+  .pdf-logo { width: 56px; height: 56px; object-fit: contain; }
+  .pdf-cliente .lbl { font-size: 9px; font-weight: 700; color: #1a3a5c; text-transform: uppercase; }
+  .pdf-cliente .nm { font-size: 14px; font-weight: 700; }
+  .pdf-brand { text-align: right; }
+  .pdf-brand .bn { font-size: 24px; font-weight: 900; color: #c0392b; letter-spacing: 2px; }
+  .pdf-brand .bs { font-size: 9px; font-weight: 700; color: #1a3a5c; }
+  .pdf-badge { display: inline-block; margin-top: 4px; background: #e67e22; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 3px; }
+  .pdf-body { padding: 16px 24px; }
+  .pdf-section-title { font-size: 10px; font-weight: 700; color: #1a3a5c; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1.5px solid #1a3a5c; padding-bottom: 4px; margin-bottom: 10px; }
+  .pdf-canvas-img { width: 100%; border: 1px solid #e5e7eb; border-radius: 4px; }
+  .pdf-footer { display: flex; align-items: center; justify-content: space-between; padding: 10px 24px; border-top: 1px solid #e5e7eb; margin-top: 10px; }
+  .pdf-logos { display: flex; gap: 5px; align-items: center; }
+  .pill { font-size: 8px; font-weight: 800; border: 0.5px solid; border-radius: 3px; padding: 2px 5px; }
+  .p-hik { color:#c0392b;border-color:#c0392b; }
+  .p-dah { color:#e67e22;border-color:#e67e22; }
+  .p-uni { color:#1a3a5c;border-color:#1a3a5c; }
+  .p-fza { color:#27ae60;border-color:#27ae60; }
+  .p-heg { color:#8e44ad;border-color:#8e44ad; }
+</style>
+</head>
+<body>
+
+<div id="overlay">
+  <div class="spinner"></div>
+  <div class="overlay-text" id="overlay-text">Generando PDF...</div>
+</div>
+
+<div id="pdf-content">
+  <div id="pdf-page">
+    <div class="pdf-header">
+      <div class="pdf-header-left">
+        <img class="pdf-logo" src="https://i.imgur.com/vKZVImG.png" crossorigin="anonymous" alt="FLOSAL"/>
+        <div class="pdf-cliente">
+          <div class="lbl">Plano de Instalación</div>
+          <div class="nm" id="pdf-nombre">Cliente</div>
+          <div style="font-size:11px;color:#555;" id="pdf-dir"></div>
+        </div>
+      </div>
+      <div class="pdf-brand">
+        <div class="bn">FLOSAL</div>
+        <div class="bs">SOLUCIONES TECNOLÓGICAS</div>
+        <div class="bs">941144164 · 932596249</div>
+        <div class="pdf-badge">PLANO TÉCNICO</div>
+      </div>
+    </div>
+    <div class="pdf-body">
+      <div class="pdf-section-title">Boceto del Plano de Instalación</div>
+      <img id="pdf-canvas-img" class="pdf-canvas-img" src="" alt="Plano"/>
+    </div>
+    <div class="pdf-footer">
+      <div class="pdf-logos">
+        <span class="pill p-hik">HIKVISION</span>
+        <span class="pill p-dah">Dahua</span>
+        <span class="pill p-heg">HEGROV</span>
+        <span class="pill p-uni">UniFi</span>
+        <span class="pill p-fza">FORZA</span>
+      </div>
+      <span style="font-size:9px;color:#aaa;" id="pdf-fecha"></span>
+    </div>
+  </div>
+</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <img src="https://i.imgur.com/vKZVImG.png" alt="FLOSAL"/>
+  </div>
+  <div>
+    <div class="topbar-title">Plano de Instalación</div>
+    <div class="topbar-client" id="client-label">Sin cliente</div>
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <!-- Herramientas -->
+  <div class="tool-group">
+    <button class="tool-btn active" id="tool-pencil" onclick="setTool('pencil')" title="Lápiz">
+      ✏️<span class="tooltip">Lápiz</span>
+    </button>
+    <button class="tool-btn" id="tool-eraser" onclick="setTool('eraser')">
+      🧹<span class="tooltip">Borrador</span>
+    </button>
+    <button class="tool-btn" id="tool-line" onclick="setTool('line')">
+      ╱<span class="tooltip">Línea</span>
+    </button>
+    <button class="tool-btn" id="tool-rect" onclick="setTool('rect')">
+      ▭<span class="tooltip">Rectángulo</span>
+    </button>
+    <button class="tool-btn" id="tool-text" onclick="setTool('text')">
+      T<span class="tooltip">Texto</span>
+    </button>
+  </div>
+
+  <!-- Colores -->
+  <div class="tool-group">
+    <div class="color-btn active" style="background:#1a1a1a;" onclick="setColor('#1a1a1a',this)" data-color="#1a1a1a"></div>
+    <div class="color-btn" style="background:#c0392b;" onclick="setColor('#c0392b',this)" data-color="#c0392b"></div>
+    <div class="color-btn" style="background:#1a3a5c;" onclick="setColor('#1a3a5c',this)" data-color="#1a3a5c"></div>
+    <div class="color-btn" style="background:#27ae60;" onclick="setColor('#27ae60',this)" data-color="#27ae60"></div>
+    <div class="color-btn" style="background:#e67e22;" onclick="setColor('#e67e22',this)" data-color="#e67e22"></div>
+    <div class="color-btn" style="background:#8e44ad;" onclick="setColor('#8e44ad',this)" data-color="#8e44ad"></div>
+  </div>
+
+  <!-- Grosor -->
+  <div class="tool-group">
+    <button class="stroke-btn active" id="sz-2" onclick="setSize(2,this)"><span style="display:inline-block;width:12px;height:2px;background:currentColor;border-radius:2px;"></span></button>
+    <button class="stroke-btn" id="sz-4" onclick="setSize(4,this)"><span style="display:inline-block;width:12px;height:4px;background:currentColor;border-radius:2px;"></span></button>
+    <button class="stroke-btn" id="sz-8" onclick="setSize(8,this)"><span style="display:inline-block;width:12px;height:8px;background:currentColor;border-radius:2px;"></span></button>
+  </div>
+
+  <!-- Equipos -->
+  <div class="tool-group" style="gap:4px;">
+    <div class="equip-icon" onclick="addEquip('cam','📷','Cámara')" title="Cámara">📷<span class="equip-label">Cámara</span></div>
+    <div class="equip-icon" onclick="addEquip('cam360','🔵','Domo')" title="Cámara Domo">🔵<span class="equip-label">Domo</span></div>
+    <div class="equip-icon" onclick="addEquip('alarm','🚨','Alarma')" title="Alarma">🚨<span class="equip-label">Alarma</span></div>
+    <div class="equip-icon" onclick="addEquip('router','📡','Router')" title="Router/NVR">📡<span class="equip-label">Router</span></div>
+    <div class="equip-icon" onclick="addEquip('door','🔔','Portero')" title="Videoportero">🔔<span class="equip-label">Portero</span></div>
+    <div class="equip-icon" onclick="addEquip('access','🔐','Acceso')" title="Control Acceso">🔐<span class="equip-label">Acceso</span></div>
+    <div class="equip-icon" onclick="addEquip('dvr','🖥️','DVR')" title="DVR/NVR">🖥️<span class="equip-label">DVR</span></div>
+  </div>
+</div>
+
+<!-- CANVAS -->
+<div class="canvas-wrap" id="canvas-wrap">
+  <canvas id="main-canvas"></canvas>
+  <div id="text-input-overlay">
+    <input id="text-input-field" placeholder="Escribe aquí..." onkeydown="handleTextInput(event)"/>
+  </div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottombar">
+  <button class="action-btn btn-undo" onclick="undo()">↩️ Deshacer</button>
+  <button class="action-btn btn-clear" onclick="clearCanvas()">🗑️ Limpiar</button>
+  <button class="action-btn btn-pdf" onclick="descargarPDF()">🖨️ PDF</button>
+  <button class="action-btn btn-wa" onclick="enviarWhatsApp()">📲 WhatsApp</button>
+</div>
+
+<script>
+// ── Params ────────────────────────────────────────────────────────────
+const p = new URLSearchParams(window.location.search);
+const cliente  = p.get('cliente')   || 'Sin nombre';
+const telefono = p.get('tel')       || '';
+const direccion= p.get('direccion') || '';
+const tecnico  = p.get('tecnico')   || 'FLOSAL';
+document.getElementById('client-label').textContent = cliente + (direccion ? ' — ' + direccion : '');
+
+// ── Canvas setup ──────────────────────────────────────────────────────
+const wrap   = document.getElementById('canvas-wrap');
+const canvas = document.getElementById('main-canvas');
+const ctx    = canvas.getContext('2d');
+
+function resizeCanvas() {
+  const snapshot = canvas.toDataURL();
+  canvas.width  = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  ctx.fillStyle = '#f8fafc';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  if (snapshot !== 'data:,') {
+    const img = new Image();
+    img.onload = () => ctx.drawImage(img,0,0);
+    img.src = snapshot;
+  }
+}
+window.addEventListener('resize', resizeCanvas);
+setTimeout(resizeCanvas, 50);
+
+// ── State ─────────────────────────────────────────────────────────────
+let tool      = 'pencil';
+let color     = '#1a1a1a';
+let strokeSz  = 2;
+let drawing   = false;
+let startX=0, startY=0;
+let history   = [];
+let textPos   = {x:0, y:0};
+
+// Equipos (iconos arrastables)
+let equipItems = [];
+let draggingEquip = null;
+let dragOffX=0, dragOffY=0;
+
+function saveHistory() {
+  if (history.length > 30) history.shift();
+  history.push(canvas.toDataURL());
+}
+
+function undo() {
+  if (history.length === 0) return;
+  const img = new Image();
+  img.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0); };
+  img.src = history.pop();
+  redrawEquips();
+}
+
+function clearCanvas() {
+  if (!confirm('¿Limpiar todo el plano?')) return;
+  saveHistory();
+  ctx.fillStyle = '#f8fafc';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  equipItems = [];
+}
+
+// ── Tools ─────────────────────────────────────────────────────────────
+function setTool(t) {
+  tool = t;
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tool-'+t)?.classList.add('active');
+  canvas.style.cursor = t === 'eraser' ? 'cell' : t === 'text' ? 'text' : 'crosshair';
+}
+
+function setColor(c, el) {
+  color = c;
+  document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function setSize(s, el) {
+  strokeSz = s;
+  document.querySelectorAll('.stroke-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── Equip icons ───────────────────────────────────────────────────────
+function addEquip(type, emoji, label) {
+  saveHistory();
+  equipItems.push({
+    id: Date.now(),
+    type, emoji, label,
+    x: 60 + Math.random()*200,
+    y: 60 + Math.random()*200,
+  });
+  redrawEquips();
+}
+
+function redrawEquips() {
+  equipItems.forEach(eq => {
+    ctx.save();
+    ctx.font = '28px serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(eq.emoji, eq.x, eq.y);
+    ctx.font = '600 10px Inter, Arial';
+    ctx.fillStyle = '#1a3a5c';
+    ctx.textBaseline = 'top';
+    ctx.fillText(eq.label, eq.x, eq.y + 16);
+    ctx.restore();
+  });
+}
+
+function getEquipAt(x, y) {
+  for (let i = equipItems.length-1; i >= 0; i--) {
+    const eq = equipItems[i];
+    if (Math.abs(x-eq.x) < 22 && Math.abs(y-eq.y) < 22) return i;
+  }
+  return -1;
+}
+
+// ── Pointer helpers ───────────────────────────────────────────────────
+function getXY(e) {
+  const r = canvas.getBoundingClientRect();
+  if (e.touches) {
+    return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
+  }
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+
+// ── Drawing ───────────────────────────────────────────────────────────
+let previewSnapshot = null;
+
+canvas.addEventListener('pointerdown', e => {
+  const {x,y} = getXY(e);
+
+  // Check equip drag first
+  if (tool === 'pencil' || tool === 'eraser') {
+    const idx = getEquipAt(x,y);
+    if (idx !== -1) {
+      draggingEquip = idx;
+      dragOffX = x - equipItems[idx].x;
+      dragOffY = y - equipItems[idx].y;
+      return;
+    }
+  }
+
+  if (tool === 'text') { showTextInput(x,y); return; }
+
+  saveHistory();
+  drawing = true;
+  startX = x; startY = y;
+
+  if (tool === 'pencil' || tool === 'eraser') {
+    ctx.beginPath();
+    ctx.moveTo(x,y);
+  }
+  if (tool === 'line' || tool === 'rect') {
+    previewSnapshot = canvas.toDataURL();
+  }
+  e.preventDefault();
+});
+
+canvas.addEventListener('pointermove', e => {
+  const {x,y} = getXY(e);
+
+  if (draggingEquip !== null) {
+    saveHistory();
+    // Redraw canvas from last state
+    const img = new Image();
+    const snap = history[history.length-1];
+    if (snap) {
+      img.onload = () => {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.drawImage(img,0,0);
+        equipItems[draggingEquip].x = x - dragOffX;
+        equipItems[draggingEquip].y = y - dragOffY;
+        redrawEquips();
+      };
+      img.src = snap;
+    } else {
+      equipItems[draggingEquip].x = x - dragOffX;
+      equipItems[draggingEquip].y = y - dragOffY;
+      redrawEquips();
+    }
+    e.preventDefault();
+    return;
+  }
+
+  if (!drawing) return;
+
+  if (tool === 'pencil') {
+    ctx.lineTo(x,y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = strokeSz;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+  } else if (tool === 'eraser') {
+    ctx.beginPath();
+    ctx.arc(x,y,strokeSz*4,0,Math.PI*2);
+    ctx.fillStyle = '#f8fafc';
+    ctx.fill();
+  } else if (tool === 'line' && previewSnapshot) {
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(img,0,0);
+      ctx.beginPath();
+      ctx.moveTo(startX,startY);
+      ctx.lineTo(x,y);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = strokeSz;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+      redrawEquips();
+    };
+    img.src = previewSnapshot;
+  } else if (tool === 'rect' && previewSnapshot) {
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(img,0,0);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = strokeSz;
+      ctx.strokeRect(startX,startY,x-startX,y-startY);
+      redrawEquips();
+    };
+    img.src = previewSnapshot;
+  }
+  e.preventDefault();
+});
+
+canvas.addEventListener('pointerup', e => {
+  drawing = false;
+  draggingEquip = null;
+  previewSnapshot = null;
+  if (tool === 'pencil') ctx.closePath();
+  redrawEquips();
+  e.preventDefault();
+});
+
+canvas.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+canvas.addEventListener('touchmove',  e => e.preventDefault(), { passive: false });
+
+// ── Text tool ─────────────────────────────────────────────────────────
+function showTextInput(x,y) {
+  textPos = {x,y};
+  const ov = document.getElementById('text-input-overlay');
+  const inp = document.getElementById('text-input-field');
+  ov.style.display = 'block';
+  ov.style.left = x + 'px';
+  ov.style.top  = (y - 20) + 'px';
+  inp.value = '';
+  inp.style.color = color;
+  inp.focus();
+}
+
+function handleTextInput(e) {
+  if (e.key === 'Enter') {
+    const txt = document.getElementById('text-input-field').value.trim();
+    if (txt) {
+      saveHistory();
+      ctx.font = `${14 + strokeSz*2}px Inter, Arial`;
+      ctx.fillStyle = color;
+      ctx.textBaseline = 'middle';
+      ctx.fillText(txt, textPos.x, textPos.y);
+      redrawEquips();
+    }
+    document.getElementById('text-input-overlay').style.display = 'none';
+    e.preventDefault();
+  }
+  if (e.key === 'Escape') {
+    document.getElementById('text-input-overlay').style.display = 'none';
+  }
+}
+
+// ── PDF ───────────────────────────────────────────────────────────────
+function precargarLogo() {
+  return new Promise(res => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = res; img.onerror = res;
+    img.src = 'https://i.imgur.com/vKZVImG.png';
+  });
+}
+
+function prepararPDF() {
+  const fecha = new Date().toLocaleDateString('es-PE');
+  document.getElementById('pdf-nombre').textContent = cliente;
+  document.getElementById('pdf-dir').textContent = direccion || '';
+  document.getElementById('pdf-fecha').textContent = fecha;
+  document.getElementById('pdf-canvas-img').src = canvas.toDataURL('image/jpeg', 0.95);
+}
+
+function getPDFOptions(filename) {
+  return {
+    margin: [6,6,6,6],
+    filename,
+    image: { type:'jpeg', quality:0.97 },
+    html2canvas: { scale:2, useCORS:true, allowTaint:true, imageTimeout:15000, logging:false },
+    jsPDF: { unit:'mm', format:'a4', orientation:'landscape' },
+  };
+}
+
+function mostrarOverlay(t) { document.getElementById('overlay-text').textContent=t; document.getElementById('overlay').classList.add('show'); }
+function ocultarOverlay()  { document.getElementById('overlay').classList.remove('show'); }
+
+async function descargarPDF() {
+  const filename = `Plano_FLOSAL_${cliente.replace(/\s+/g,'_')}.pdf`;
+  mostrarOverlay('Generando PDF...');
+  prepararPDF();
+  document.getElementById('pdf-content').style.display = 'block';
+  try {
+    await precargarLogo();
+    await html2pdf().set(getPDFOptions(filename)).from(document.getElementById('pdf-page')).save();
+  } finally {
+    document.getElementById('pdf-content').style.display = 'none';
+    ocultarOverlay();
+  }
+}
+
+async function enviarWhatsApp() {
+  const filename = `Plano_FLOSAL_${cliente.replace(/\s+/g,'_')}.pdf`;
+  mostrarOverlay('Generando PDF...');
+  prepararPDF();
+  document.getElementById('pdf-content').style.display = 'block';
+  try {
+    await precargarLogo();
+    const blob = await html2pdf().set(getPDFOptions(filename)).from(document.getElementById('pdf-page')).outputPdf('blob');
+    document.getElementById('pdf-content').style.display = 'none';
+    ocultarOverlay();
+
+    if (navigator.canShare && navigator.canShare({ files:[new File([blob],filename,{type:'application/pdf'})] })) {
+      mostrarOverlay('Abriendo WhatsApp...');
+      await navigator.share({
+        files: [new File([blob],filename,{type:'application/pdf'})],
+        title: 'Plano de Instalación FLOSAL',
+        text: `Plano de instalación técnica para ${cliente}. FLOSAL Seguridad Electrónica.`,
+      });
+      ocultarOverlay();
+    } else {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download=filename; a.click();
+      URL.revokeObjectURL(url);
+      setTimeout(() => {
+        const tel2 = telefono ? `52511${telefono.replace(/\D/g,'')}` : '';
+        const msg = `📐 *PLANO DE INSTALACIÓN — FLOSAL*\n`
+          + `👤 Cliente: ${cliente}\n`
+          + `📍 Dirección: ${direccion}\n`
+          + `👷 Técnico: ${tecnico}\n\n`
+          + `📎 _Plano técnico adjunto en PDF_\n\n`
+          + `FLOSAL Seguridad Electrónica\n📞 941144164 · 932596249`;
+        window.open((tel2?`https://wa.me/${tel2}?text=`:`https://wa.me/?text=`)+encodeURIComponent(msg),'_blank');
+      }, 800);
+    }
+  } catch(err) {
+    document.getElementById('pdf-content').style.display = 'none';
+    ocultarOverlay();
+    alert('Error al generar PDF.');
+  }
+}
+</script>
+</body>
+</html>
