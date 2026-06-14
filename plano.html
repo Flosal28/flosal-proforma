@@ -7,690 +7,548 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-  * { box-sizing: border-box; margin: 0; padding: 0; touch-action: none; }
-  body { font-family: 'Inter', sans-serif; background: #1a1a2e; min-height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: #1a1a2e; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
 
-  /* TOP BAR */
   .topbar {
-    background: #16213e;
-    border-bottom: 1px solid #0f3460;
-    padding: 8px 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    flex-shrink: 0;
-    z-index: 10;
+    background: #16213e; border-bottom: 1px solid #0f3460;
+    padding: 6px 12px; display: flex; align-items: center; gap: 10px; flex-shrink: 0;
   }
-  .topbar-logo { display: flex; align-items: center; gap: 8px; margin-right: 4px; }
-  .topbar-logo img { width: 32px; height: 32px; object-fit: contain; }
-  .topbar-title { font-size: 13px; font-weight: 700; color: #e2e8f0; white-space: nowrap; }
-  .topbar-client { font-size: 11px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px; }
+  .topbar img { width: 30px; height: 30px; object-fit: contain; }
+  .topbar-title { font-size: 13px; font-weight: 700; color: #e2e8f0; }
+  .topbar-client { font-size: 11px; color: #94a3b8; }
 
-  /* TOOLBAR */
   .toolbar {
-    background: #16213e;
-    border-bottom: 1px solid #0f3460;
-    padding: 6px 10px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-wrap: wrap;
-    flex-shrink: 0;
-    z-index: 10;
+    background: #16213e; border-bottom: 1px solid #0f3460;
+    padding: 5px 10px; display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;
+    overflow-x: auto; flex-shrink: 0;
   }
-  .tool-group { display: flex; gap: 3px; align-items: center; padding-right: 8px; border-right: 1px solid #0f3460; margin-right: 4px; }
-  .tool-group:last-child { border-right: none; }
+  .toolbar::-webkit-scrollbar { height: 3px; }
+  .toolbar::-webkit-scrollbar-thumb { background: #0f3460; }
+
+  .sep { width: 1px; height: 32px; background: #0f3460; margin: 0 4px; flex-shrink: 0; }
+
   .tool-btn {
-    width: 36px; height: 36px;
-    border-radius: 7px;
-    border: 1.5px solid transparent;
-    background: #0f3460;
-    color: #94a3b8;
-    font-size: 16px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.12s;
-    position: relative;
+    width: 34px; height: 34px; border-radius: 7px; border: 1.5px solid transparent;
+    background: #0f3460; color: #94a3b8; font-size: 15px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    transition: all 0.12s; user-select: none;
   }
   .tool-btn:hover { background: #1a3a6c; color: #e2e8f0; }
   .tool-btn.active { background: #e94560; border-color: #e94560; color: #fff; }
-  .tool-btn .tooltip {
-    display: none;
-    position: absolute;
-    bottom: -28px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #0f3460;
-    color: #e2e8f0;
-    font-size: 10px;
-    padding: 3px 6px;
-    border-radius: 4px;
-    white-space: nowrap;
-    z-index: 100;
-  }
-  .tool-btn:hover .tooltip { display: block; }
 
-  /* COLOR PICKER */
   .color-btn {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: transform 0.1s;
+    width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent;
+    cursor: pointer; flex-shrink: 0; transition: transform 0.1s;
   }
-  .color-btn:hover { transform: scale(1.15); }
+  .color-btn:hover { transform: scale(1.2); }
   .color-btn.active { border-color: #fff; transform: scale(1.15); }
 
-  /* STROKE SIZE */
-  .stroke-btn {
-    background: #0f3460;
-    border: 1.5px solid transparent;
-    border-radius: 6px;
-    padding: 4px 8px;
-    color: #94a3b8;
-    font-size: 11px;
-    cursor: pointer;
-    display: flex; align-items: center; gap: 4px;
+  .sz-btn {
+    background: #0f3460; border: 1.5px solid transparent; border-radius: 6px;
+    padding: 5px 7px; color: #94a3b8; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center;
   }
-  .stroke-btn.active { border-color: #e94560; color: #fff; }
+  .sz-btn.active { border-color: #e94560; }
 
-  /* EQUIPMENT ICONS */
-  .equip-icon {
-    width: 36px; height: 36px;
-    border-radius: 7px;
-    background: #0f3460;
-    border: 1.5px solid #1a3a6c;
-    cursor: pointer;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    font-size: 18px;
-    transition: all 0.12s;
-    position: relative;
+  /* EQUIP BUTTONS — solo agregan al canvas */
+  .equip-btn {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 44px; height: 40px; border-radius: 7px; background: #0f3460;
+    border: 1.5px solid #1a3a6c; cursor: pointer; flex-shrink: 0;
+    font-size: 18px; transition: all 0.12s; user-select: none;
   }
-  .equip-icon:hover { background: #1a3a6c; border-color: #e94560; transform: scale(1.08); }
-  .equip-label { font-size: 7px; color: #64748b; margin-top: 1px; line-height: 1; }
+  .equip-btn:hover { background: #1a3a6c; border-color: #e94560; }
+  .equip-btn span { font-size: 8px; color: #64748b; line-height: 1; margin-top: 1px; }
 
-  /* CANVAS AREA */
   .canvas-wrap {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-    background: #f8fafc;
-    cursor: crosshair;
+    flex: 1; position: relative; overflow: hidden; background: #f8fafc; touch-action: none;
   }
-  #main-canvas {
-    position: absolute;
-    inset: 0;
-    touch-action: none;
-  }
-  /* Grid overlay */
   .canvas-wrap::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(148,163,184,0.15) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(148,163,184,0.15) 1px, transparent 1px);
-    background-size: 20px 20px;
-    pointer-events: none;
-    z-index: 0;
+    content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+    background-image: linear-gradient(rgba(148,163,184,0.12) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(148,163,184,0.12) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  #main-canvas { position: absolute; inset: 0; touch-action: none; }
+
+  /* Capa de íconos SVG sobre el canvas */
+  #equip-layer {
+    position: absolute; inset: 0; pointer-events: none; z-index: 5;
+  }
+  .equip-item {
+    position: absolute; pointer-events: all; cursor: grab; user-select: none;
+    display: flex; flex-direction: column; align-items: center;
+    transform: translate(-50%, -50%);
+  }
+  .equip-item:active { cursor: grabbing; }
+  .equip-item .eicon { font-size: 28px; line-height: 1; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3)); }
+  .equip-item .elabel {
+    font-size: 9px; font-weight: 600; color: #1a3a5c;
+    background: rgba(255,255,255,0.85); padding: 1px 4px; border-radius: 3px;
+    margin-top: 2px; white-space: nowrap;
+  }
+  .equip-item .edel {
+    position: absolute; top: -6px; right: -6px;
+    width: 16px; height: 16px; border-radius: 50%; background: #e94560;
+    color: #fff; font-size: 10px; font-weight: 700; border: none; cursor: pointer;
+    display: none; align-items: center; justify-content: center; line-height: 1;
+  }
+  .equip-item:hover .edel { display: flex; }
+
+  #text-overlay { display: none; position: absolute; z-index: 20; }
+  #text-field {
+    background: rgba(255,255,255,0.96); border: 2px solid #e94560;
+    border-radius: 6px; padding: 6px 10px; font-size: 14px;
+    font-family: 'Inter', sans-serif; outline: none; min-width: 140px;
   }
 
-  /* BOTTOM BAR */
   .bottombar {
-    background: #16213e;
-    border-top: 1px solid #0f3460;
-    padding: 8px 12px;
-    display: flex;
-    gap: 8px;
-    flex-shrink: 0;
-    z-index: 10;
-    flex-wrap: wrap;
+    background: #16213e; border-top: 1px solid #0f3460;
+    padding: 8px 10px; display: flex; gap: 6px; flex-shrink: 0;
   }
-  .action-btn {
-    flex: 1;
-    min-width: 100px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: none;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-    transition: opacity 0.15s;
+  .act-btn {
+    flex: 1; padding: 10px; border-radius: 8px; border: none;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
   }
-  .action-btn:hover { opacity: 0.88; }
-  .btn-clear { background: #374151; color: #9ca3af; }
   .btn-undo { background: #374151; color: #9ca3af; }
+  .btn-clear { background: #374151; color: #9ca3af; }
   .btn-pdf { background: #1a3a5c; color: #fff; }
   .btn-wa { background: #25d366; color: #fff; }
 
-  /* TEXT INPUT OVERLAY */
-  #text-input-overlay {
-    display: none;
-    position: absolute;
-    z-index: 50;
-  }
-  #text-input-field {
-    background: rgba(255,255,255,0.95);
-    border: 2px solid #e94560;
-    border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 14px;
-    font-family: 'Inter', sans-serif;
-    outline: none;
-    min-width: 150px;
-  }
+  #overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:999; align-items:center; justify-content:center; flex-direction:column; gap:14px; }
+  #overlay.show { display:flex; }
+  .spinner { width:44px;height:44px;border:4px solid rgba(255,255,255,0.2);border-top-color:#25d366;border-radius:50%;animation:spin 0.8s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg);} }
+  .overlay-text { color:#fff;font-size:15px;font-weight:500; }
 
-  /* OVERLAY */
-  #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 999; align-items: center; justify-content: center; flex-direction: column; gap: 14px; }
-  #overlay.show { display: flex; }
-  .spinner { width: 44px; height: 44px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #25d366; border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .overlay-text { color: #fff; font-size: 15px; font-weight: 500; }
-
-  /* PDF CONTENT */
-  #pdf-content { display: none; background: #fff; }
-  .pdf-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 3px solid #1a3a5c; }
-  .pdf-header-left { display: flex; align-items: center; gap: 12px; }
-  .pdf-logo { width: 56px; height: 56px; object-fit: contain; }
-  .pdf-cliente .lbl { font-size: 9px; font-weight: 700; color: #1a3a5c; text-transform: uppercase; }
-  .pdf-cliente .nm { font-size: 14px; font-weight: 700; }
-  .pdf-brand { text-align: right; }
-  .pdf-brand .bn { font-size: 24px; font-weight: 900; color: #c0392b; letter-spacing: 2px; }
-  .pdf-brand .bs { font-size: 9px; font-weight: 700; color: #1a3a5c; }
-  .pdf-badge { display: inline-block; margin-top: 4px; background: #e67e22; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 3px; }
-  .pdf-body { padding: 16px 24px; }
-  .pdf-section-title { font-size: 10px; font-weight: 700; color: #1a3a5c; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1.5px solid #1a3a5c; padding-bottom: 4px; margin-bottom: 10px; }
-  .pdf-canvas-img { width: 100%; border: 1px solid #e5e7eb; border-radius: 4px; }
-  .pdf-footer { display: flex; align-items: center; justify-content: space-between; padding: 10px 24px; border-top: 1px solid #e5e7eb; margin-top: 10px; }
-  .pdf-logos { display: flex; gap: 5px; align-items: center; }
-  .pill { font-size: 8px; font-weight: 800; border: 0.5px solid; border-radius: 3px; padding: 2px 5px; }
-  .p-hik { color:#c0392b;border-color:#c0392b; }
-  .p-dah { color:#e67e22;border-color:#e67e22; }
-  .p-uni { color:#1a3a5c;border-color:#1a3a5c; }
-  .p-fza { color:#27ae60;border-color:#27ae60; }
-  .p-heg { color:#8e44ad;border-color:#8e44ad; }
+  #pdf-content { display:none; background:#fff; font-family:'Inter',sans-serif; }
+  .pdf-hdr { display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:3px solid #1a3a5c; }
+  .pdf-hdr-l { display:flex;align-items:center;gap:10px; }
+  .pdf-logo { width:52px;height:52px;object-fit:contain; }
+  .pdf-cli .lbl { font-size:9px;font-weight:700;color:#1a3a5c;text-transform:uppercase; }
+  .pdf-cli .nm { font-size:13px;font-weight:700; }
+  .pdf-cli .det { font-size:10px;color:#666; }
+  .pdf-br { text-align:right; }
+  .pdf-br .bn { font-size:22px;font-weight:900;color:#c0392b;letter-spacing:2px; }
+  .pdf-br .bs { font-size:9px;font-weight:700;color:#1a3a5c; }
+  .pdf-badge { display:inline-block;margin-top:4px;background:#e67e22;color:#fff;font-size:8px;font-weight:700;padding:2px 7px;border-radius:3px; }
+  .pdf-body { padding:12px 20px; }
+  .pdf-stitle { font-size:9px;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1.5px solid #1a3a5c;padding-bottom:3px;margin-bottom:8px; }
+  .pdf-img { width:100%;border:1px solid #e5e7eb;border-radius:4px; }
+  .pdf-ftr { display:flex;align-items:center;justify-content:space-between;padding:8px 20px;border-top:1px solid #e5e7eb;margin-top:8px; }
+  .pills { display:flex;gap:4px; }
+  .pill { font-size:8px;font-weight:800;border:0.5px solid;border-radius:3px;padding:2px 5px; }
+  .p-hik{color:#c0392b;border-color:#c0392b;} .p-dah{color:#e67e22;border-color:#e67e22;}
+  .p-uni{color:#1a3a5c;border-color:#1a3a5c;} .p-fza{color:#27ae60;border-color:#27ae60;}
+  .p-heg{color:#8e44ad;border-color:#8e44ad;}
 </style>
 </head>
 <body>
 
-<div id="overlay">
-  <div class="spinner"></div>
-  <div class="overlay-text" id="overlay-text">Generando PDF...</div>
-</div>
+<div id="overlay"><div class="spinner"></div><div class="overlay-text" id="otxt">Generando PDF...</div></div>
 
-<div id="pdf-content">
-  <div id="pdf-page">
-    <div class="pdf-header">
-      <div class="pdf-header-left">
-        <img class="pdf-logo" src="https://i.imgur.com/vKZVImG.png" crossorigin="anonymous" alt="FLOSAL"/>
-        <div class="pdf-cliente">
-          <div class="lbl">Plano de Instalación</div>
-          <div class="nm" id="pdf-nombre">Cliente</div>
-          <div style="font-size:11px;color:#555;" id="pdf-dir"></div>
-        </div>
-      </div>
-      <div class="pdf-brand">
-        <div class="bn">FLOSAL</div>
-        <div class="bs">SOLUCIONES TECNOLÓGICAS</div>
-        <div class="bs">941144164 · 932596249</div>
-        <div class="pdf-badge">PLANO TÉCNICO</div>
+<div id="pdf-content"><div id="pdf-page">
+  <div class="pdf-hdr">
+    <div class="pdf-hdr-l">
+      <img class="pdf-logo" src="https://i.imgur.com/vKZVImG.png" crossorigin="anonymous"/>
+      <div class="pdf-cli">
+        <div class="lbl">Plano de Instalación</div>
+        <div class="nm" id="pdf-nm">Cliente</div>
+        <div class="det" id="pdf-dir"></div>
       </div>
     </div>
-    <div class="pdf-body">
-      <div class="pdf-section-title">Boceto del Plano de Instalación</div>
-      <img id="pdf-canvas-img" class="pdf-canvas-img" src="" alt="Plano"/>
-    </div>
-    <div class="pdf-footer">
-      <div class="pdf-logos">
-        <span class="pill p-hik">HIKVISION</span>
-        <span class="pill p-dah">Dahua</span>
-        <span class="pill p-heg">HEGROV</span>
-        <span class="pill p-uni">UniFi</span>
-        <span class="pill p-fza">FORZA</span>
-      </div>
-      <span style="font-size:9px;color:#aaa;" id="pdf-fecha"></span>
+    <div class="pdf-br">
+      <div class="bn">FLOSAL</div>
+      <div class="bs">SOLUCIONES TECNOLÓGICAS · 941144164 · 932596249</div>
+      <div class="pdf-badge">PLANO TÉCNICO</div>
     </div>
   </div>
-</div>
+  <div class="pdf-body">
+    <div class="pdf-stitle">Boceto del Plano de Instalación</div>
+    <img id="pdf-img" class="pdf-img" src="" alt="Plano"/>
+  </div>
+  <div class="pdf-ftr">
+    <div class="pills">
+      <span class="pill p-hik">HIKVISION</span><span class="pill p-dah">Dahua</span>
+      <span class="pill p-heg">HEGROV</span><span class="pill p-uni">UniFi</span>
+      <span class="pill p-fza">FORZA</span>
+    </div>
+    <span style="font-size:9px;color:#aaa;" id="pdf-fecha"></span>
+  </div>
+</div></div>
 
 <!-- TOP BAR -->
 <div class="topbar">
-  <div class="topbar-logo">
-    <img src="https://i.imgur.com/vKZVImG.png" alt="FLOSAL"/>
-  </div>
+  <img src="https://i.imgur.com/vKZVImG.png" alt="FLOSAL"/>
   <div>
     <div class="topbar-title">Plano de Instalación</div>
-    <div class="topbar-client" id="client-label">Sin cliente</div>
+    <div class="topbar-client" id="client-lbl">Sin cliente</div>
   </div>
 </div>
 
 <!-- TOOLBAR -->
 <div class="toolbar">
-  <!-- Herramientas -->
-  <div class="tool-group">
-    <button class="tool-btn active" id="tool-pencil" onclick="setTool('pencil')" title="Lápiz">
-      ✏️<span class="tooltip">Lápiz</span>
-    </button>
-    <button class="tool-btn" id="tool-eraser" onclick="setTool('eraser')">
-      🧹<span class="tooltip">Borrador</span>
-    </button>
-    <button class="tool-btn" id="tool-line" onclick="setTool('line')">
-      ╱<span class="tooltip">Línea</span>
-    </button>
-    <button class="tool-btn" id="tool-rect" onclick="setTool('rect')">
-      ▭<span class="tooltip">Rectángulo</span>
-    </button>
-    <button class="tool-btn" id="tool-text" onclick="setTool('text')">
-      T<span class="tooltip">Texto</span>
-    </button>
-  </div>
+  <!-- Herramientas de dibujo -->
+  <button class="tool-btn active" id="t-pencil" onclick="setTool('pencil')" title="Lápiz">✏️</button>
+  <button class="tool-btn" id="t-eraser" onclick="setTool('eraser')" title="Borrador">🧹</button>
+  <button class="tool-btn" id="t-line" onclick="setTool('line')" title="Línea">╱</button>
+  <button class="tool-btn" id="t-rect" onclick="setTool('rect')" title="Rectángulo">▭</button>
+  <button class="tool-btn" id="t-text" onclick="setTool('text')" title="Texto">T</button>
+
+  <div class="sep"></div>
 
   <!-- Colores -->
-  <div class="tool-group">
-    <div class="color-btn active" style="background:#1a1a1a;" onclick="setColor('#1a1a1a',this)" data-color="#1a1a1a"></div>
-    <div class="color-btn" style="background:#c0392b;" onclick="setColor('#c0392b',this)" data-color="#c0392b"></div>
-    <div class="color-btn" style="background:#1a3a5c;" onclick="setColor('#1a3a5c',this)" data-color="#1a3a5c"></div>
-    <div class="color-btn" style="background:#27ae60;" onclick="setColor('#27ae60',this)" data-color="#27ae60"></div>
-    <div class="color-btn" style="background:#e67e22;" onclick="setColor('#e67e22',this)" data-color="#e67e22"></div>
-    <div class="color-btn" style="background:#8e44ad;" onclick="setColor('#8e44ad',this)" data-color="#8e44ad"></div>
-  </div>
+  <div class="color-btn active" style="background:#111;" onclick="setColor('#111',this)"></div>
+  <div class="color-btn" style="background:#c0392b;" onclick="setColor('#c0392b',this)"></div>
+  <div class="color-btn" style="background:#1a3a5c;" onclick="setColor('#1a3a5c',this)"></div>
+  <div class="color-btn" style="background:#27ae60;" onclick="setColor('#27ae60',this)"></div>
+  <div class="color-btn" style="background:#e67e22;" onclick="setColor('#e67e22',this)"></div>
+  <div class="color-btn" style="background:#8e44ad;" onclick="setColor('#8e44ad',this)"></div>
+
+  <div class="sep"></div>
 
   <!-- Grosor -->
-  <div class="tool-group">
-    <button class="stroke-btn active" id="sz-2" onclick="setSize(2,this)"><span style="display:inline-block;width:12px;height:2px;background:currentColor;border-radius:2px;"></span></button>
-    <button class="stroke-btn" id="sz-4" onclick="setSize(4,this)"><span style="display:inline-block;width:12px;height:4px;background:currentColor;border-radius:2px;"></span></button>
-    <button class="stroke-btn" id="sz-8" onclick="setSize(8,this)"><span style="display:inline-block;width:12px;height:8px;background:currentColor;border-radius:2px;"></span></button>
-  </div>
+  <button class="sz-btn active" id="sz-2" onclick="setSize(2,this)"><span style="display:block;width:14px;height:2px;background:#94a3b8;border-radius:2px;"></span></button>
+  <button class="sz-btn" id="sz-4" onclick="setSize(4,this)"><span style="display:block;width:14px;height:4px;background:#94a3b8;border-radius:2px;"></span></button>
+  <button class="sz-btn" id="sz-8" onclick="setSize(8,this)"><span style="display:block;width:14px;height:8px;background:#94a3b8;border-radius:2px;"></span></button>
 
-  <!-- Equipos -->
-  <div class="tool-group" style="gap:4px;">
-    <div class="equip-icon" onclick="addEquip('cam','📷','Cámara')" title="Cámara">📷<span class="equip-label">Cámara</span></div>
-    <div class="equip-icon" onclick="addEquip('cam360','🔵','Domo')" title="Cámara Domo">🔵<span class="equip-label">Domo</span></div>
-    <div class="equip-icon" onclick="addEquip('alarm','🚨','Alarma')" title="Alarma">🚨<span class="equip-label">Alarma</span></div>
-    <div class="equip-icon" onclick="addEquip('router','📡','Router')" title="Router/NVR">📡<span class="equip-label">Router</span></div>
-    <div class="equip-icon" onclick="addEquip('door','🔔','Portero')" title="Videoportero">🔔<span class="equip-label">Portero</span></div>
-    <div class="equip-icon" onclick="addEquip('access','🔐','Acceso')" title="Control Acceso">🔐<span class="equip-label">Acceso</span></div>
-    <div class="equip-icon" onclick="addEquip('dvr','🖥️','DVR')" title="DVR/NVR">🖥️<span class="equip-label">DVR</span></div>
-  </div>
+  <div class="sep"></div>
+
+  <!-- Equipos: un clic = agrega 1 icono al centro, luego se arrastra -->
+  <div class="equip-btn" onclick="addEquip('📷','Cámara')" title="Agregar Cámara">📷<span>Cámara</span></div>
+  <div class="equip-btn" onclick="addEquip('🔵','Domo')" title="Agregar Domo">🔵<span>Domo</span></div>
+  <div class="equip-btn" onclick="addEquip('🚨','Alarma')" title="Agregar Alarma">🚨<span>Alarma</span></div>
+  <div class="equip-btn" onclick="addEquip('📡','Router')" title="Agregar Router">📡<span>Router</span></div>
+  <div class="equip-btn" onclick="addEquip('🔔','Portero')" title="Agregar Portero">🔔<span>Portero</span></div>
+  <div class="equip-btn" onclick="addEquip('🔐','Acceso')" title="Agregar Acceso">🔐<span>Acceso</span></div>
+  <div class="equip-btn" onclick="addEquip('🖥️','DVR')" title="Agregar DVR">🖥️<span>DVR</span></div>
 </div>
 
 <!-- CANVAS -->
-<div class="canvas-wrap" id="canvas-wrap">
+<div class="canvas-wrap" id="cwrap">
   <canvas id="main-canvas"></canvas>
-  <div id="text-input-overlay">
-    <input id="text-input-field" placeholder="Escribe aquí..." onkeydown="handleTextInput(event)"/>
-  </div>
+  <div id="equip-layer"></div>
+  <div id="text-overlay"><input id="text-field" placeholder="Escribe y presiona Enter" onkeydown="commitText(event)"/></div>
 </div>
 
 <!-- BOTTOM BAR -->
 <div class="bottombar">
-  <button class="action-btn btn-undo" onclick="undo()">↩️ Deshacer</button>
-  <button class="action-btn btn-clear" onclick="clearCanvas()">🗑️ Limpiar</button>
-  <button class="action-btn btn-pdf" onclick="descargarPDF()">🖨️ PDF</button>
-  <button class="action-btn btn-wa" onclick="enviarWhatsApp()">📲 WhatsApp</button>
+  <button class="act-btn btn-undo" onclick="undo()">↩️ Deshacer</button>
+  <button class="act-btn btn-clear" onclick="clearAll()">🗑️ Limpiar</button>
+  <button class="act-btn btn-pdf" onclick="descargarPDF()">🖨️ PDF</button>
+  <button class="act-btn btn-wa" onclick="enviarWhatsApp()">📲 WhatsApp</button>
 </div>
 
 <script>
-// ── Params ────────────────────────────────────────────────────────────
-const p = new URLSearchParams(window.location.search);
-const cliente  = p.get('cliente')   || 'Sin nombre';
-const telefono = p.get('tel')       || '';
-const direccion= p.get('direccion') || '';
-const tecnico  = p.get('tecnico')   || 'FLOSAL';
-document.getElementById('client-label').textContent = cliente + (direccion ? ' — ' + direccion : '');
+// ── URL params ────────────────────────────────────────────────────────
+const qp       = new URLSearchParams(window.location.search);
+const cliente  = qp.get('cliente')   || 'Sin nombre';
+const telefono = qp.get('tel')       || '';
+const direccion= qp.get('direccion') || '';
+const tecnico  = qp.get('tecnico')   || 'FLOSAL';
+document.getElementById('client-lbl').textContent = cliente + (direccion ? ' — ' + direccion : '');
 
-// ── Canvas setup ──────────────────────────────────────────────────────
-const wrap   = document.getElementById('canvas-wrap');
+// ── Canvas ────────────────────────────────────────────────────────────
+const cwrap  = document.getElementById('cwrap');
 const canvas = document.getElementById('main-canvas');
 const ctx    = canvas.getContext('2d');
 
 function resizeCanvas() {
-  const snapshot = canvas.toDataURL();
-  canvas.width  = wrap.clientWidth;
-  canvas.height = wrap.clientHeight;
-  ctx.fillStyle = '#f8fafc';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-  if (snapshot !== 'data:,') {
-    const img = new Image();
-    img.onload = () => ctx.drawImage(img,0,0);
-    img.src = snapshot;
-  }
+  const snap = canvas.toDataURL();
+  canvas.width  = cwrap.clientWidth;
+  canvas.height = cwrap.clientHeight;
+  fillBg();
+  if (snap !== 'data:,') { const i=new Image(); i.onload=()=>ctx.drawImage(i,0,0); i.src=snap; }
 }
+function fillBg() { ctx.fillStyle='#f8fafc'; ctx.fillRect(0,0,canvas.width,canvas.height); }
 window.addEventListener('resize', resizeCanvas);
-setTimeout(resizeCanvas, 50);
+setTimeout(resizeCanvas, 60);
 
 // ── State ─────────────────────────────────────────────────────────────
-let tool      = 'pencil';
-let color     = '#1a1a1a';
-let strokeSz  = 2;
-let drawing   = false;
-let startX=0, startY=0;
-let history   = [];
-let textPos   = {x:0, y:0};
-
-// Equipos (iconos arrastables)
-let equipItems = [];
-let draggingEquip = null;
-let dragOffX=0, dragOffY=0;
+let tool    = 'pencil';
+let color   = '#111';
+let sz      = 2;
+let drawing = false;
+let sx=0, sy=0;
+let history = [];
+let prevSnap= null;
+let textPos = {x:0,y:0};
 
 function saveHistory() {
-  if (history.length > 30) history.shift();
+  if (history.length > 40) history.shift();
   history.push(canvas.toDataURL());
 }
 
 function undo() {
-  if (history.length === 0) return;
-  const img = new Image();
-  img.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0); };
-  img.src = history.pop();
-  redrawEquips();
+  if (!history.length) return;
+  const img=new Image();
+  img.onload=()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0); };
+  img.src=history.pop();
 }
 
-function clearCanvas() {
+function clearAll() {
   if (!confirm('¿Limpiar todo el plano?')) return;
   saveHistory();
-  ctx.fillStyle = '#f8fafc';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-  equipItems = [];
+  fillBg();
+  document.getElementById('equip-layer').innerHTML='';
 }
 
 // ── Tools ─────────────────────────────────────────────────────────────
 function setTool(t) {
-  tool = t;
-  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tool-'+t)?.classList.add('active');
-  canvas.style.cursor = t === 'eraser' ? 'cell' : t === 'text' ? 'text' : 'crosshair';
+  tool=t;
+  document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('t-'+t)?.classList.add('active');
+  canvas.style.cursor = t==='eraser'?'cell': t==='text'?'text':'crosshair';
 }
-
-function setColor(c, el) {
-  color = c;
-  document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+function setColor(c,el) {
+  color=c;
+  document.querySelectorAll('.color-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+function setSize(s,el) {
+  sz=s;
+  document.querySelectorAll('.sz-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
 }
 
-function setSize(s, el) {
-  strokeSz = s;
-  document.querySelectorAll('.stroke-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
+// ── Pointer utils ─────────────────────────────────────────────────────
+function xy(e) {
+  const r=canvas.getBoundingClientRect();
+  const src=e.touches?e.touches[0]:e;
+  return {x:src.clientX-r.left, y:src.clientY-r.top};
 }
 
-// ── Equip icons ───────────────────────────────────────────────────────
-function addEquip(type, emoji, label) {
+// ── Draw events ───────────────────────────────────────────────────────
+canvas.addEventListener('pointerdown', e=>{
+  if (tool==='text') { const {x,y}=xy(e); showText(x,y); return; }
   saveHistory();
-  equipItems.push({
-    id: Date.now(),
-    type, emoji, label,
-    x: 60 + Math.random()*200,
-    y: 60 + Math.random()*200,
-  });
-  redrawEquips();
+  drawing=true;
+  const {x,y}=xy(e); sx=x; sy=y;
+  if (tool==='pencil'||tool==='eraser') { ctx.beginPath(); ctx.moveTo(x,y); }
+  if (tool==='line'||tool==='rect') prevSnap=canvas.toDataURL();
+  e.preventDefault();
+},{passive:false});
+
+canvas.addEventListener('pointermove', e=>{
+  if (!drawing) return;
+  const {x,y}=xy(e);
+  if (tool==='pencil') {
+    ctx.lineTo(x,y); ctx.strokeStyle=color; ctx.lineWidth=sz;
+    ctx.lineCap='round'; ctx.lineJoin='round'; ctx.stroke();
+  } else if (tool==='eraser') {
+    ctx.beginPath(); ctx.arc(x,y,sz*5,0,Math.PI*2);
+    ctx.fillStyle='#f8fafc'; ctx.fill();
+  } else if (tool==='line'&&prevSnap) {
+    const img=new Image();
+    img.onload=()=>{
+      ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0);
+      ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(x,y);
+      ctx.strokeStyle=color; ctx.lineWidth=sz; ctx.lineCap='round'; ctx.stroke();
+    }; img.src=prevSnap;
+  } else if (tool==='rect'&&prevSnap) {
+    const img=new Image();
+    img.onload=()=>{
+      ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0);
+      ctx.strokeStyle=color; ctx.lineWidth=sz;
+      ctx.strokeRect(sx,sy,x-sx,y-sy);
+    }; img.src=prevSnap;
+  }
+  e.preventDefault();
+},{passive:false});
+
+canvas.addEventListener('pointerup', e=>{ drawing=false; prevSnap=null; e.preventDefault(); },{passive:false});
+canvas.addEventListener('touchstart', e=>e.preventDefault(),{passive:false});
+canvas.addEventListener('touchmove',  e=>e.preventDefault(),{passive:false});
+
+// ── Text ──────────────────────────────────────────────────────────────
+function showText(x,y) {
+  textPos={x,y};
+  const ov=document.getElementById('text-overlay');
+  const inp=document.getElementById('text-field');
+  ov.style.display='block'; ov.style.left=x+'px'; ov.style.top=(y-18)+'px';
+  inp.value=''; inp.style.color=color; inp.focus();
+}
+function commitText(e) {
+  if (e.key==='Enter') {
+    const txt=document.getElementById('text-field').value.trim();
+    if (txt) {
+      saveHistory();
+      ctx.font=`${12+sz*2}px Inter,Arial`;
+      ctx.fillStyle=color; ctx.textBaseline='middle';
+      ctx.fillText(txt,textPos.x,textPos.y);
+    }
+    document.getElementById('text-overlay').style.display='none';
+    e.preventDefault();
+  }
+  if (e.key==='Escape') document.getElementById('text-overlay').style.display='none';
 }
 
-function redrawEquips() {
-  equipItems.forEach(eq => {
-    ctx.save();
+// ── Equip icons (DOM layer — arrastrables) ────────────────────────────
+let equipCnt = 0;
+
+function addEquip(emoji, label) {
+  equipCnt++;
+  const layer = document.getElementById('equip-layer');
+  const el = document.createElement('div');
+  el.className = 'equip-item';
+  el.id = 'eq-'+equipCnt;
+
+  // posición inicial: centro del canvas con pequeño offset aleatorio
+  const cx = cwrap.clientWidth/2  + (Math.random()-0.5)*80;
+  const cy = cwrap.clientHeight/2 + (Math.random()-0.5)*80;
+  el.style.left = cx+'px';
+  el.style.top  = cy+'px';
+
+  el.innerHTML = `
+    <button class="edel" onclick="removeEquip('eq-${equipCnt}')">✕</button>
+    <div class="eicon">${emoji}</div>
+    <div class="elabel">${label}</div>
+  `;
+
+  // Drag logic
+  let dragging=false, ox=0, oy=0;
+
+  el.addEventListener('pointerdown', e=>{
+    if (e.target.classList.contains('edel')) return;
+    dragging=true;
+    const rect=el.getBoundingClientRect();
+    ox=e.clientX-rect.left-(rect.width/2);
+    oy=e.clientY-rect.top-(rect.height/2);
+    el.setPointerCapture(e.pointerId);
+    el.style.zIndex=10; el.style.filter='drop-shadow(0 4px 8px rgba(0,0,0,0.4))';
+    e.stopPropagation(); e.preventDefault();
+  },{passive:false});
+
+  el.addEventListener('pointermove', e=>{
+    if (!dragging) return;
+    const wr=cwrap.getBoundingClientRect();
+    const nx=e.clientX-wr.left-ox;
+    const ny=e.clientY-wr.top-oy;
+    el.style.left=nx+'px';
+    el.style.top =ny+'px';
+    e.preventDefault();
+  },{passive:false});
+
+  el.addEventListener('pointerup', e=>{
+    dragging=false;
+    el.style.zIndex=''; el.style.filter='';
+    e.preventDefault();
+  },{passive:false});
+
+  layer.appendChild(el);
+}
+
+function removeEquip(id) {
+  document.getElementById(id)?.remove();
+}
+
+// ── Captura combinada canvas + íconos DOM ─────────────────────────────
+async function captureAll() {
+  // Renderizar íconos DOM al canvas temporalmente
+  const layer = document.getElementById('equip-layer');
+  const items = layer.querySelectorAll('.equip-item');
+  const wrapR = cwrap.getBoundingClientRect();
+
+  saveHistory();
+
+  items.forEach(el => {
+    const r   = el.getBoundingClientRect();
+    const x   = r.left - wrapR.left + r.width/2;
+    const y   = r.top  - wrapR.top  + r.height/2;
+    const ico = el.querySelector('.eicon').textContent;
+    const lbl = el.querySelector('.elabel').textContent;
     ctx.font = '28px serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(eq.emoji, eq.x, eq.y);
-    ctx.font = '600 10px Inter, Arial';
+    ctx.fillText(ico, x, y);
+    ctx.font = 'bold 10px Inter, Arial';
     ctx.fillStyle = '#1a3a5c';
     ctx.textBaseline = 'top';
-    ctx.fillText(eq.label, eq.x, eq.y + 16);
-    ctx.restore();
+    ctx.fillText(lbl, x, y+16);
   });
-}
 
-function getEquipAt(x, y) {
-  for (let i = equipItems.length-1; i >= 0; i--) {
-    const eq = equipItems[i];
-    if (Math.abs(x-eq.x) < 22 && Math.abs(y-eq.y) < 22) return i;
-  }
-  return -1;
-}
-
-// ── Pointer helpers ───────────────────────────────────────────────────
-function getXY(e) {
-  const r = canvas.getBoundingClientRect();
-  if (e.touches) {
-    return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
-  }
-  return { x: e.clientX - r.left, y: e.clientY - r.top };
-}
-
-// ── Drawing ───────────────────────────────────────────────────────────
-let previewSnapshot = null;
-
-canvas.addEventListener('pointerdown', e => {
-  const {x,y} = getXY(e);
-
-  // Check equip drag first
-  if (tool === 'pencil' || tool === 'eraser') {
-    const idx = getEquipAt(x,y);
-    if (idx !== -1) {
-      draggingEquip = idx;
-      dragOffX = x - equipItems[idx].x;
-      dragOffY = y - equipItems[idx].y;
-      return;
-    }
-  }
-
-  if (tool === 'text') { showTextInput(x,y); return; }
-
-  saveHistory();
-  drawing = true;
-  startX = x; startY = y;
-
-  if (tool === 'pencil' || tool === 'eraser') {
-    ctx.beginPath();
-    ctx.moveTo(x,y);
-  }
-  if (tool === 'line' || tool === 'rect') {
-    previewSnapshot = canvas.toDataURL();
-  }
-  e.preventDefault();
-});
-
-canvas.addEventListener('pointermove', e => {
-  const {x,y} = getXY(e);
-
-  if (draggingEquip !== null) {
-    saveHistory();
-    // Redraw canvas from last state
-    const img = new Image();
-    const snap = history[history.length-1];
-    if (snap) {
-      img.onload = () => {
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        ctx.drawImage(img,0,0);
-        equipItems[draggingEquip].x = x - dragOffX;
-        equipItems[draggingEquip].y = y - dragOffY;
-        redrawEquips();
-      };
-      img.src = snap;
-    } else {
-      equipItems[draggingEquip].x = x - dragOffX;
-      equipItems[draggingEquip].y = y - dragOffY;
-      redrawEquips();
-    }
-    e.preventDefault();
-    return;
-  }
-
-  if (!drawing) return;
-
-  if (tool === 'pencil') {
-    ctx.lineTo(x,y);
-    ctx.strokeStyle = color;
-    ctx.lineWidth = strokeSz;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.stroke();
-  } else if (tool === 'eraser') {
-    ctx.beginPath();
-    ctx.arc(x,y,strokeSz*4,0,Math.PI*2);
-    ctx.fillStyle = '#f8fafc';
-    ctx.fill();
-  } else if (tool === 'line' && previewSnapshot) {
-    const img = new Image();
-    img.onload = () => {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.drawImage(img,0,0);
-      ctx.beginPath();
-      ctx.moveTo(startX,startY);
-      ctx.lineTo(x,y);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = strokeSz;
-      ctx.lineCap = 'round';
-      ctx.stroke();
-      redrawEquips();
-    };
-    img.src = previewSnapshot;
-  } else if (tool === 'rect' && previewSnapshot) {
-    const img = new Image();
-    img.onload = () => {
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.drawImage(img,0,0);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = strokeSz;
-      ctx.strokeRect(startX,startY,x-startX,y-startY);
-      redrawEquips();
-    };
-    img.src = previewSnapshot;
-  }
-  e.preventDefault();
-});
-
-canvas.addEventListener('pointerup', e => {
-  drawing = false;
-  draggingEquip = null;
-  previewSnapshot = null;
-  if (tool === 'pencil') ctx.closePath();
-  redrawEquips();
-  e.preventDefault();
-});
-
-canvas.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
-canvas.addEventListener('touchmove',  e => e.preventDefault(), { passive: false });
-
-// ── Text tool ─────────────────────────────────────────────────────────
-function showTextInput(x,y) {
-  textPos = {x,y};
-  const ov = document.getElementById('text-input-overlay');
-  const inp = document.getElementById('text-input-field');
-  ov.style.display = 'block';
-  ov.style.left = x + 'px';
-  ov.style.top  = (y - 20) + 'px';
-  inp.value = '';
-  inp.style.color = color;
-  inp.focus();
-}
-
-function handleTextInput(e) {
-  if (e.key === 'Enter') {
-    const txt = document.getElementById('text-input-field').value.trim();
-    if (txt) {
-      saveHistory();
-      ctx.font = `${14 + strokeSz*2}px Inter, Arial`;
-      ctx.fillStyle = color;
-      ctx.textBaseline = 'middle';
-      ctx.fillText(txt, textPos.x, textPos.y);
-      redrawEquips();
-    }
-    document.getElementById('text-input-overlay').style.display = 'none';
-    e.preventDefault();
-  }
-  if (e.key === 'Escape') {
-    document.getElementById('text-input-overlay').style.display = 'none';
-  }
+  return canvas.toDataURL('image/jpeg', 0.95);
 }
 
 // ── PDF ───────────────────────────────────────────────────────────────
 function precargarLogo() {
-  return new Promise(res => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = res; img.onerror = res;
-    img.src = 'https://i.imgur.com/vKZVImG.png';
+  return new Promise(res=>{
+    const i=new Image(); i.crossOrigin='anonymous';
+    i.onload=res; i.onerror=res;
+    i.src='https://i.imgur.com/vKZVImG.png';
   });
 }
 
-function prepararPDF() {
-  const fecha = new Date().toLocaleDateString('es-PE');
-  document.getElementById('pdf-nombre').textContent = cliente;
-  document.getElementById('pdf-dir').textContent = direccion || '';
-  document.getElementById('pdf-fecha').textContent = fecha;
-  document.getElementById('pdf-canvas-img').src = canvas.toDataURL('image/jpeg', 0.95);
-}
-
-function getPDFOptions(filename) {
+function getPDFOpts(fn) {
   return {
-    margin: [6,6,6,6],
-    filename,
-    image: { type:'jpeg', quality:0.97 },
-    html2canvas: { scale:2, useCORS:true, allowTaint:true, imageTimeout:15000, logging:false },
-    jsPDF: { unit:'mm', format:'a4', orientation:'landscape' },
+    margin:[5,5,5,5], filename:fn,
+    image:{type:'jpeg',quality:0.97},
+    html2canvas:{scale:2,useCORS:true,allowTaint:true,imageTimeout:15000,logging:false},
+    jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},
   };
 }
 
-function mostrarOverlay(t) { document.getElementById('overlay-text').textContent=t; document.getElementById('overlay').classList.add('show'); }
-function ocultarOverlay()  { document.getElementById('overlay').classList.remove('show'); }
+function showOv(t){document.getElementById('otxt').textContent=t; document.getElementById('overlay').classList.add('show');}
+function hideOv(){document.getElementById('overlay').classList.remove('show');}
 
 async function descargarPDF() {
-  const filename = `Plano_FLOSAL_${cliente.replace(/\s+/g,'_')}.pdf`;
-  mostrarOverlay('Generando PDF...');
-  prepararPDF();
-  document.getElementById('pdf-content').style.display = 'block';
+  const fn=`Plano_FLOSAL_${cliente.replace(/\s+/g,'_')}.pdf`;
+  showOv('Generando PDF...');
   try {
+    const imgData = await captureAll();
+    document.getElementById('pdf-nm').textContent = cliente;
+    document.getElementById('pdf-dir').textContent = direccion;
+    document.getElementById('pdf-fecha').textContent = new Date().toLocaleDateString('es-PE');
+    document.getElementById('pdf-img').src = imgData;
+    document.getElementById('pdf-content').style.display='block';
     await precargarLogo();
-    await html2pdf().set(getPDFOptions(filename)).from(document.getElementById('pdf-page')).save();
+    await html2pdf().set(getPDFOpts(fn)).from(document.getElementById('pdf-page')).save();
   } finally {
-    document.getElementById('pdf-content').style.display = 'none';
-    ocultarOverlay();
+    document.getElementById('pdf-content').style.display='none';
+    // Restaurar canvas
+    const last=history[history.length-1];
+    if(last){const i=new Image();i.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(i,0,0);};i.src=last;}
+    hideOv();
   }
 }
 
 async function enviarWhatsApp() {
-  const filename = `Plano_FLOSAL_${cliente.replace(/\s+/g,'_')}.pdf`;
-  mostrarOverlay('Generando PDF...');
-  prepararPDF();
-  document.getElementById('pdf-content').style.display = 'block';
+  const fn=`Plano_FLOSAL_${cliente.replace(/\s+/g,'_')}.pdf`;
+  showOv('Generando PDF...');
   try {
+    const imgData = await captureAll();
+    document.getElementById('pdf-nm').textContent = cliente;
+    document.getElementById('pdf-dir').textContent = direccion;
+    document.getElementById('pdf-fecha').textContent = new Date().toLocaleDateString('es-PE');
+    document.getElementById('pdf-img').src = imgData;
+    document.getElementById('pdf-content').style.display='block';
     await precargarLogo();
-    const blob = await html2pdf().set(getPDFOptions(filename)).from(document.getElementById('pdf-page')).outputPdf('blob');
-    document.getElementById('pdf-content').style.display = 'none';
-    ocultarOverlay();
+    const blob=await html2pdf().set(getPDFOpts(fn)).from(document.getElementById('pdf-page')).outputPdf('blob');
+    document.getElementById('pdf-content').style.display='none';
+    const last=history[history.length-1];
+    if(last){const i=new Image();i.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(i,0,0);};i.src=last;}
+    hideOv();
 
-    if (navigator.canShare && navigator.canShare({ files:[new File([blob],filename,{type:'application/pdf'})] })) {
-      mostrarOverlay('Abriendo WhatsApp...');
-      await navigator.share({
-        files: [new File([blob],filename,{type:'application/pdf'})],
-        title: 'Plano de Instalación FLOSAL',
-        text: `Plano de instalación técnica para ${cliente}. FLOSAL Seguridad Electrónica.`,
-      });
-      ocultarOverlay();
+    if (navigator.canShare&&navigator.canShare({files:[new File([blob],fn,{type:'application/pdf'})]})) {
+      showOv('Abriendo WhatsApp...');
+      await navigator.share({files:[new File([blob],fn,{type:'application/pdf'})],title:'Plano FLOSAL',text:`Plano técnico para ${cliente}. FLOSAL Seguridad Electrónica.`});
+      hideOv();
     } else {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href=url; a.download=filename; a.click();
-      URL.revokeObjectURL(url);
-      setTimeout(() => {
-        const tel2 = telefono ? `52511${telefono.replace(/\D/g,'')}` : '';
-        const msg = `📐 *PLANO DE INSTALACIÓN — FLOSAL*\n`
-          + `👤 Cliente: ${cliente}\n`
-          + `📍 Dirección: ${direccion}\n`
-          + `👷 Técnico: ${tecnico}\n\n`
-          + `📎 _Plano técnico adjunto en PDF_\n\n`
-          + `FLOSAL Seguridad Electrónica\n📞 941144164 · 932596249`;
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement('a');a.href=url;a.download=fn;a.click();URL.revokeObjectURL(url);
+      setTimeout(()=>{
+        const tel2=telefono?`52511${telefono.replace(/\D/g,'')}` :'';
+        const msg=`📐 *PLANO DE INSTALACIÓN — FLOSAL*\n👤 ${cliente}\n📍 ${direccion}\n📎 _PDF adjunto_\n\nFLOSAL Seguridad Electrónica\n📞 941144164`;
         window.open((tel2?`https://wa.me/${tel2}?text=`:`https://wa.me/?text=`)+encodeURIComponent(msg),'_blank');
-      }, 800);
+      },800);
     }
   } catch(err) {
-    document.getElementById('pdf-content').style.display = 'none';
-    ocultarOverlay();
-    alert('Error al generar PDF.');
+    document.getElementById('pdf-content').style.display='none';
+    hideOv();
+    alert('Error al generar PDF. Intente de nuevo.');
+    console.error(err);
   }
 }
 </script>
