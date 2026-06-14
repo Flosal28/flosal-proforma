@@ -108,12 +108,14 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.4);
   }
   .equip-item:hover .equip-controls { display: flex; }
+  .equip-controls * { pointer-events: all; }
   .ctrl-btn {
-    width: 20px; height: 20px; border-radius: 50%; border: none;
-    background: #0f3460; color: #94a3b8; font-size: 11px; cursor: pointer;
+    width: 22px; height: 22px; border-radius: 50%; border: none;
+    background: #0f3460; color: #94a3b8; font-size: 12px; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transition: background 0.1s;
-    padding: 0;
+    padding: 0; pointer-events: all; z-index: 30; position: relative;
+    -webkit-tap-highlight-color: transparent;
   }
   .ctrl-btn:hover { background: #e94560; color: #fff; }
   .ctrl-del { background: #7f1d1d; color: #fca5a5; }
@@ -506,7 +508,13 @@ function addEquip(emoji, label) {
   let dragging=false, ox=0, oy=0;
 
   el.addEventListener('pointerdown', e=>{
-    if (e.target.classList.contains('edel')) return;
+    // No iniciar drag si se toca un botón de control
+    if (e.target.classList.contains('ctrl-btn') || e.target.closest('.ctrl-btn') || e.target.closest('.equip-controls')) {
+      e.stopPropagation();
+      return;
+    }
+    // Mostrar controles al tocar en móvil
+    el.querySelector('.equip-controls').style.display = 'flex';
     dragging=true;
     const rect=el.getBoundingClientRect();
     ox=e.clientX-rect.left-(rect.width/2);
@@ -515,6 +523,13 @@ function addEquip(emoji, label) {
     el.style.zIndex=10; el.style.filter='drop-shadow(0 4px 8px rgba(0,0,0,0.4))';
     e.stopPropagation(); e.preventDefault();
   },{passive:false});
+
+  // Ocultar controles al tocar fuera
+  document.addEventListener('pointerdown', (e) => {
+    if (!el.contains(e.target)) {
+      el.querySelector('.equip-controls').style.display = 'none';
+    }
+  }, {passive:true});
 
   el.addEventListener('pointermove', e=>{
     if (!dragging) return;
