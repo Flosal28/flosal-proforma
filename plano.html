@@ -54,12 +54,17 @@
   /* EQUIP BUTTONS — solo agregan al canvas */
   .equip-btn {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
-    width: 44px; height: 40px; border-radius: 7px; background: #0f3460;
+    width: 44px; height: 42px; border-radius: 7px; background: #0f3460;
     border: 1.5px solid #1a3a6c; cursor: pointer; flex-shrink: 0;
-    font-size: 18px; transition: all 0.12s; user-select: none;
+    transition: all 0.12s; user-select: none;
   }
   .equip-btn:hover { background: #1a3a6c; border-color: #e94560; }
-  .equip-btn span { font-size: 8px; color: #64748b; line-height: 1; margin-top: 1px; }
+  .equip-btn .eq-icon-slot {
+    display: flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px;
+  }
+  .equip-btn .eq-icon-slot svg { width: 100%; height: 100%; }
+  .equip-btn .eq-label { font-size: 8px; color: #64748b; line-height: 1; margin-top: 2px; white-space: nowrap; }
 
   .canvas-wrap {
     flex: 1; position: relative; overflow: hidden; background: #f8fafc; touch-action: none;
@@ -242,47 +247,20 @@
   <div class="sep"></div>
 
   <!-- Equipos: un clic = agrega 1 icono al centro, luego se arrastra -->
-  <div class="equip-btn" onclick="addEquip('bullet','Bullet')" title="Agregar Cámara Bullet"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="32" height="32">
-  <!-- Soporte -->
-  <rect x="62" y="8" width="22" height="5" rx="2" fill="none" stroke="#1a3a5c" stroke-width="3.5" stroke-linecap="round"/>
-  <rect x="78" y="8" width="5" height="22" rx="2" fill="none" stroke="#1a3a5c" stroke-width="3.5" stroke-linecap="round"/>
-  <!-- Cuerpo principal -->
-  <path d="M15 42 Q14 30 28 28 L75 24 Q86 23 88 35 L88 58 Q88 70 75 70 L28 68 Q14 68 15 56 Z" fill="none" stroke="#1a3a5c" stroke-width="3.5" stroke-linejoin="round"/>
-  <!-- Lente frontal exterior -->
-  <ellipse cx="20" cy="49" rx="10" ry="13" fill="none" stroke="#1a3a5c" stroke-width="3.5"/>
-  <!-- Lente interior -->
-  <ellipse cx="20" cy="49" rx="6" ry="8" fill="none" stroke="#1a3a5c" stroke-width="2.5"/>
-  <!-- Líneas decorativas en el cuerpo -->
-  <line x1="45" y1="65" x2="75" y2="63" stroke="#1a3a5c" stroke-width="2" stroke-linecap="round"/>
-  <line x1="42" y1="72" x2="48" y2="71" stroke="#1a3a5c" stroke-width="2" stroke-linecap="round"/>
-  <!-- Conector trasero -->
-  <line x1="78" y1="30" x2="83" y2="30" stroke="#1a3a5c" stroke-width="3" stroke-linecap="round"/>
-</svg><span>Bullet</span></div>
-  <div class="equip-btn" onclick="addEquip('domo','Domo')" title="Agregar Domo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="32" height="32">
-  <!-- Cuerpo domo exterior -->
-  <path d="M10 55 Q10 20 50 18 Q90 20 90 55 L90 62 Q90 68 84 68 L16 68 Q10 68 10 62 Z" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3"/>
-  <!-- Base plana -->
-  <rect x="10" y="62" width="80" height="8" rx="3" fill="#d0d0d0" stroke="#1a3a5c" stroke-width="2.5"/>
-  <!-- Cúpula oscura interior -->
-  <path d="M25 55 Q25 32 50 30 Q75 32 75 55 L75 60 L25 60 Z" fill="#2a2a2a" stroke="#333" stroke-width="1.5"/>
-  <!-- Lente exterior -->
-  <circle cx="50" cy="50" r="14" fill="#111" stroke="#444" stroke-width="2"/>
-  <!-- Lente medio -->
-  <circle cx="50" cy="50" r="9" fill="#1a1a1a" stroke="#555" stroke-width="1.5"/>
-  <!-- Reflejo lente -->
-  <circle cx="50" cy="50" r="5" fill="#0a0a0a"/>
-  <circle cx="44" cy="44" r="2.5" fill="rgba(255,255,255,0.15)"/>
-  <!-- Tornillos laterales -->
-  <circle cx="22" cy="58" r="3" fill="#bbb" stroke="#999" stroke-width="1"/>
-  <circle cx="78" cy="58" r="3" fill="#bbb" stroke="#999" stroke-width="1"/>
-  <!-- Punto indicador LED -->
-  <circle cx="50" cy="65" r="2" fill="#555"/>
-</svg><span>Domo</span></div>
-  <div class="equip-btn" onclick="addEquip('🚨','Alarma')" title="Agregar Alarma">🚨<span>Alarma</span></div>
-  <div class="equip-btn" onclick="addEquip('📡','Router')" title="Agregar Router">📡<span>Router</span></div>
-  <div class="equip-btn" onclick="addEquip('🔔','Portero')" title="Agregar Portero">🔔<span>Portero</span></div>
-  <div class="equip-btn" onclick="addEquip('🔐','Acceso')" title="Agregar Acceso">🔐<span>Acceso</span></div>
-  <div class="equip-btn" onclick="addEquip('🖥️','DVR')" title="Agregar DVR">🖥️<span>DVR</span></div>
+  <div class="equip-btn" data-icon="bullet" onclick="addEquip('bullet','Bullet')" title="Agregar Cámara Bullet"><span class="eq-icon-slot"></span><span class="eq-label">Bullet</span></div>
+  <div class="equip-btn" data-icon="domo" onclick="addEquip('domo','Domo')" title="Agregar Domo"><span class="eq-icon-slot"></span><span class="eq-label">Domo</span></div>
+  <div class="equip-btn" data-icon="ptz" onclick="addEquip('ptz','PTZ')" title="Agregar Cámara PTZ"><span class="eq-icon-slot"></span><span class="eq-label">PTZ</span></div>
+  <div class="equip-btn" data-icon="alarma" onclick="addEquip('alarma','Alarma')" title="Agregar Panel de Alarma"><span class="eq-icon-slot"></span><span class="eq-label">Alarma</span></div>
+  <div class="equip-btn" data-icon="sirena" onclick="addEquip('sirena','Sirena')" title="Agregar Sirena"><span class="eq-icon-slot"></span><span class="eq-label">Sirena</span></div>
+  <div class="equip-btn" data-icon="sensor" onclick="addEquip('sensor','Sensor')" title="Agregar Sensor de Movimiento"><span class="eq-icon-slot"></span><span class="eq-label">Sensor</span></div>
+  <div class="equip-btn" data-icon="teclado" onclick="addEquip('teclado','Teclado')" title="Agregar Teclado"><span class="eq-icon-slot"></span><span class="eq-label">Teclado</span></div>
+  <div class="equip-btn" data-icon="router" onclick="addEquip('router','Router')" title="Agregar Router"><span class="eq-icon-slot"></span><span class="eq-label">Router</span></div>
+  <div class="equip-btn" data-icon="portero" onclick="addEquip('portero','Portero')" title="Agregar Portero"><span class="eq-icon-slot"></span><span class="eq-label">Portero</span></div>
+  <div class="equip-btn" data-icon="acceso" onclick="addEquip('acceso','Acceso')" title="Agregar Control de Acceso"><span class="eq-icon-slot"></span><span class="eq-label">Acceso</span></div>
+  <div class="equip-btn" data-icon="dvr" onclick="addEquip('dvr','DVR')" title="Agregar DVR"><span class="eq-icon-slot"></span><span class="eq-label">DVR</span></div>
+  <div class="equip-btn" data-icon="nvr" onclick="addEquip('nvr','NVR')" title="Agregar NVR"><span class="eq-icon-slot"></span><span class="eq-label">NVR</span></div>
+  <div class="equip-btn" data-icon="tablero" onclick="addEquip('tablero','Tablero')" title="Agregar Tablero Eléctrico"><span class="eq-icon-slot"></span><span class="eq-label">Tablero</span></div>
+  <div class="equip-btn" data-icon="corriente" onclick="addEquip('corriente','Corriente')" title="Agregar Punto de Corriente"><span class="eq-icon-slot"></span><span class="eq-label">Corriente</span></div>
 </div>
 
 <!-- CANVAS -->
@@ -444,10 +422,155 @@ function commitText(e) {
   if (e.key==='Escape') document.getElementById('text-overlay').style.display='none';
 }
 
+// ── Íconos de equipos (SVG) ─────────────────────────────────────────────
+// Un solo lugar para editar cada ícono: se usa tanto en el botón de la
+// barra de herramientas como en el ítem arrastrable dentro del plano.
+// Para cambiar el dibujo de un ícono, edita su entrada aquí abajo.
+// Para agregar un ícono nuevo: 1) agrega una entrada aquí con una clave
+// nueva, 2) agrega un botón <div class="equip-btn" data-icon="TU_CLAVE"
+// onclick="addEquip('TU_CLAVE','Etiqueta')">...</div> en el HTML del toolbar.
+const ICON_BODIES = {
+  bullet: `
+    <ellipse cx="78" cy="14" rx="16" ry="7" fill="#e8b877" stroke="#1a3a5c" stroke-width="2.5"/>
+    <rect x="72" y="16" width="10" height="14" rx="3" fill="#2a3547" stroke="#1a3a5c" stroke-width="2.5"/>
+    <path d="M14 44 Q13 30 28 27 L74 22 Q87 21 89 34 L89 60 Q89 73 74 73 L28 70 Q13 68 14 56 Z" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3.5" stroke-linejoin="round"/>
+    <ellipse cx="19" cy="50" rx="11" ry="15" fill="#2a3547" stroke="#1a3a5c" stroke-width="3.5"/>
+    <ellipse cx="19" cy="50" rx="7" ry="10" fill="#1a1a2e" stroke="#334" stroke-width="1.5"/>
+    <ellipse cx="19" cy="50" rx="3.5" ry="5" fill="#5b7bd8"/>
+    <circle cx="16" cy="45" r="1.6" fill="rgba(255,255,255,0.55)"/>
+    <line x1="46" y1="67" x2="76" y2="65" stroke="#1a3a5c" stroke-width="2" stroke-linecap="round"/>
+    <line x1="43" y1="74" x2="49" y2="73" stroke="#1a3a5c" stroke-width="2" stroke-linecap="round"/>`,
+
+  domo: `
+    <path d="M10 55 Q10 20 50 18 Q90 20 90 55 L90 62 Q90 68 84 68 L16 68 Q10 68 10 62 Z" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3"/>
+    <rect x="10" y="62" width="80" height="8" rx="3" fill="#d0d0d0" stroke="#1a3a5c" stroke-width="2.5"/>
+    <path d="M25 55 Q25 32 50 30 Q75 32 75 55 L75 60 L25 60 Z" fill="#2a2a2a" stroke="#333" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="14" fill="#111" stroke="#444" stroke-width="2"/>
+    <circle cx="50" cy="50" r="9" fill="#1a1a1a" stroke="#555" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="5" fill="#0a0a0a"/>
+    <circle cx="44" cy="44" r="2.5" fill="rgba(255,255,255,0.15)"/>
+    <circle cx="22" cy="58" r="3" fill="#bbb" stroke="#999" stroke-width="1"/>
+    <circle cx="78" cy="58" r="3" fill="#bbb" stroke="#999" stroke-width="1"/>
+    <circle cx="50" cy="65" r="2" fill="#555"/>`,
+
+  ptz: `
+    <circle cx="50" cy="50" r="24" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3.5"/>
+    <circle cx="50" cy="50" r="15" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
+    <circle cx="50" cy="50" r="7" fill="#0a0a0a"/>
+    <circle cx="46" cy="46" r="2" fill="rgba(255,255,255,0.2)"/>
+    <path d="M50 8 L44 20 L56 20 Z" fill="#1a3a5c"/>
+    <path d="M50 92 L44 80 L56 80 Z" fill="#1a3a5c"/>
+    <path d="M8 50 L20 44 L20 56 Z" fill="#1a3a5c"/>
+    <path d="M92 50 L80 44 L80 56 Z" fill="#1a3a5c"/>`,
+
+  alarma: `
+    <path d="M40 8 L44 18 M50 6 L50 17 M60 8 L56 18" stroke="#e67e22" stroke-width="3" stroke-linecap="round"/>
+    <path d="M42 22 Q50 14 58 22" fill="none" stroke="#1a3a5c" stroke-width="3" stroke-linecap="round"/>
+    <rect x="14" y="22" width="72" height="58" rx="7" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3.5"/>
+    <path d="M24 48 L24 62 L34 62 L34 54 L40 54 L40 62 L50 62 L50 48 L37 38 Z" fill="none" stroke="#1a3a5c" stroke-width="2.6" stroke-linejoin="round"/>
+    <path d="M22 44 Q30 36 38 44" fill="none" stroke="#1a3a5c" stroke-width="2.2" stroke-linecap="round"/>
+    <circle cx="60" cy="46" r="2.6" fill="#1a3a5c"/><circle cx="69" cy="46" r="2.6" fill="#1a3a5c"/><circle cx="78" cy="46" r="2.6" fill="#1a3a5c"/>
+    <circle cx="60" cy="55" r="2.6" fill="#1a3a5c"/><circle cx="69" cy="55" r="2.6" fill="#1a3a5c"/><circle cx="78" cy="55" r="2.6" fill="#1a3a5c"/>
+    <rect x="56" y="63" width="26" height="7" rx="2" fill="none" stroke="#1a3a5c" stroke-width="2.2"/>`,
+
+  sirena: `
+    <path d="M18 38 L40 38 L64 16 L64 84 L40 62 L18 62 Z" fill="none" stroke="#1a3a5c" stroke-width="4" stroke-linejoin="round"/>
+    <rect x="10" y="42" width="8" height="16" rx="2" fill="#1a3a5c"/>
+    <path d="M72 32 Q84 50 72 68" fill="none" stroke="#e67e22" stroke-width="4" stroke-linecap="round"/>
+    <path d="M80 22 Q96 50 80 78" fill="none" stroke="#e67e22" stroke-width="3.5" stroke-linecap="round"/>`,
+
+  sensor: `
+    <path d="M28 20 Q50 4 72 20" fill="none" stroke="#1a3a5c" stroke-width="3" stroke-linecap="round"/>
+    <rect x="24" y="22" width="52" height="34" rx="9" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3.5"/>
+    <circle cx="50" cy="39" r="10" fill="#1a1a1a" stroke="#333" stroke-width="2"/>
+    <circle cx="50" cy="39" r="4.5" fill="#e94560"/>
+    <path d="M30 56 L18 80" stroke="#1a3a5c" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M70 56 L82 80" stroke="#1a3a5c" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M50 56 L50 84" stroke="#1a3a5c" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="1 7"/>`,
+
+  teclado: `
+    <rect x="26" y="12" width="48" height="76" rx="7" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3.5"/>
+    <circle cx="38" cy="30" r="3.2" fill="#1a3a5c"/><circle cx="50" cy="30" r="3.2" fill="#1a3a5c"/><circle cx="62" cy="30" r="3.2" fill="#1a3a5c"/>
+    <circle cx="38" cy="44" r="3.2" fill="#1a3a5c"/><circle cx="50" cy="44" r="3.2" fill="#1a3a5c"/><circle cx="62" cy="44" r="3.2" fill="#1a3a5c"/>
+    <circle cx="38" cy="58" r="3.2" fill="#1a3a5c"/><circle cx="50" cy="58" r="3.2" fill="#1a3a5c"/><circle cx="62" cy="58" r="3.2" fill="#1a3a5c"/>
+    <rect x="35" y="70" width="30" height="9" rx="3" fill="none" stroke="#1a3a5c" stroke-width="2.5"/>`,
+
+  router: `
+    <rect x="14" y="56" width="72" height="26" rx="5" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3.5"/>
+    <circle cx="27" cy="69" r="2.8" fill="#27ae60"/>
+    <circle cx="38" cy="69" r="2.8" fill="#1a3a5c"/>
+    <line x1="52" y1="65" x2="76" y2="65" stroke="#1a3a5c" stroke-width="2.2"/>
+    <line x1="52" y1="72" x2="76" y2="72" stroke="#1a3a5c" stroke-width="2.2"/>
+    <path d="M32 46 Q50 28 68 46" fill="none" stroke="#1a3a5c" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M40 42 Q50 33 60 42" fill="none" stroke="#1a3a5c" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="50" cy="47" r="2.6" fill="#1a3a5c"/>`,
+
+  portero: `
+    <rect x="30" y="12" width="40" height="76" rx="7" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3.5"/>
+    <circle cx="50" cy="30" r="9" fill="none" stroke="#1a3a5c" stroke-width="3"/>
+    <circle cx="50" cy="30" r="3.5" fill="#1a3a5c"/>
+    <rect x="38" y="48" width="24" height="6" rx="2" fill="#1a3a5c"/>
+    <rect x="38" y="58" width="24" height="6" rx="2" fill="#1a3a5c"/>
+    <circle cx="50" cy="76" r="6.5" fill="none" stroke="#1a3a5c" stroke-width="3"/>`,
+
+  acceso: `
+    <rect x="24" y="46" width="52" height="36" rx="7" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3.5"/>
+    <path d="M34 46 L34 30 Q34 14 50 14 Q66 14 66 30 L66 46" fill="none" stroke="#1a3a5c" stroke-width="4"/>
+    <circle cx="50" cy="60" r="5.5" fill="#1a3a5c"/>
+    <line x1="50" y1="65" x2="50" y2="73" stroke="#1a3a5c" stroke-width="3.5" stroke-linecap="round"/>`,
+
+  dvr: `
+    <rect x="10" y="34" width="80" height="30" rx="4" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3.5"/>
+    <circle cx="22" cy="49" r="3" fill="#27ae60"/>
+    <circle cx="32" cy="49" r="3" fill="#1a3a5c"/>
+    <rect x="46" y="42" width="36" height="14" rx="2" fill="#111" stroke="#333" stroke-width="1.5"/>
+    <line x1="10" y1="70" x2="90" y2="70" stroke="#1a3a5c" stroke-width="2.2"/>
+    <line x1="10" y1="76" x2="90" y2="76" stroke="#1a3a5c" stroke-width="2.2"/>`,
+
+  nvr: `
+    <rect x="10" y="34" width="80" height="30" rx="4" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3.5"/>
+    <circle cx="22" cy="49" r="3" fill="#27ae60"/>
+    <circle cx="32" cy="49" r="3" fill="#1a3a5c"/>
+    <path d="M52 56 L52 46 L60 46 M60 46 L60 56 M68 56 L68 42 L76 42 M76 42 L76 56" fill="none" stroke="#1a3a5c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="10" y1="70" x2="90" y2="70" stroke="#1a3a5c" stroke-width="2.2"/>
+    <line x1="10" y1="76" x2="90" y2="76" stroke="#1a3a5c" stroke-width="2.2"/>`,
+
+  tablero: `
+    <rect x="20" y="12" width="60" height="76" rx="5" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3.5"/>
+    <rect x="30" y="22" width="14" height="24" rx="2" fill="none" stroke="#1a3a5c" stroke-width="2.6"/>
+    <rect x="48" y="22" width="14" height="24" rx="2" fill="none" stroke="#1a3a5c" stroke-width="2.6"/>
+    <rect x="66" y="22" width="6" height="24" rx="2" fill="none" stroke="#1a3a5c" stroke-width="2.2"/>
+    <line x1="30" y1="54" x2="70" y2="54" stroke="#1a3a5c" stroke-width="2.2"/>
+    <line x1="30" y1="62" x2="70" y2="62" stroke="#1a3a5c" stroke-width="2.2"/>
+    <line x1="30" y1="70" x2="70" y2="70" stroke="#1a3a5c" stroke-width="2.2"/>
+    <line x1="30" y1="78" x2="70" y2="78" stroke="#1a3a5c" stroke-width="2.2"/>`,
+
+  corriente: `
+    <rect x="26" y="14" width="48" height="72" rx="10" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3.5"/>
+    <rect x="38" y="32" width="7" height="22" rx="3" fill="#1a3a5c"/>
+    <rect x="55" y="32" width="7" height="22" rx="3" fill="#1a3a5c"/>
+    <circle cx="50" cy="66" r="5.5" fill="none" stroke="#1a3a5c" stroke-width="3"/>
+    <path d="M50 6 L46 16 L52 16 L48 26" fill="none" stroke="#e67e22" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`,
+};
+
+function svgIcon(key, size) {
+  const body = ICON_BODIES[key];
+  if (!body) return null;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="${size}" height="${size}">${body}</svg>`;
+}
+
+// Pintar la vista previa de cada botón de la barra de herramientas
+document.querySelectorAll('.equip-btn[data-icon]').forEach(btn=>{
+  const key  = btn.getAttribute('data-icon');
+  const slot = btn.querySelector('.eq-icon-slot');
+  const icon = svgIcon(key, 26);
+  if (slot && icon) slot.innerHTML = icon;
+});
+
 // ── Equip icons (DOM layer — arrastrables) ────────────────────────────
 let equipCnt = 0;
 
-function addEquip(emoji, label) {
+function addEquip(key, label) {
   equipCnt++;
   const layer = document.getElementById('equip-layer');
   const el = document.createElement('div');
@@ -460,33 +583,9 @@ function addEquip(emoji, label) {
   el.style.left = cx+'px';
   el.style.top  = cy+'px';
 
-  // Determinar contenido del icono
-  let iconHTML = '';
-  if (emoji === 'bullet') {
-    iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="36" height="36">
-      <rect x="62" y="8" width="22" height="5" rx="2" fill="none" stroke="#1a3a5c" stroke-width="3.5" stroke-linecap="round"/>
-      <rect x="78" y="8" width="5" height="22" rx="2" fill="none" stroke="#1a3a5c" stroke-width="3.5" stroke-linecap="round"/>
-      <path d="M15 42 Q14 30 28 28 L75 24 Q86 23 88 35 L88 58 Q88 70 75 70 L28 68 Q14 68 15 56 Z" fill="none" stroke="#1a3a5c" stroke-width="3.5" stroke-linejoin="round"/>
-      <ellipse cx="20" cy="49" rx="10" ry="13" fill="none" stroke="#1a3a5c" stroke-width="3.5"/>
-      <ellipse cx="20" cy="49" rx="6" ry="8" fill="none" stroke="#1a3a5c" stroke-width="2.5"/>
-      <line x1="45" y1="65" x2="75" y2="63" stroke="#1a3a5c" stroke-width="2" stroke-linecap="round"/>
-    </svg>`;
-  } else if (emoji === 'domo') {
-    iconHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="36" height="36">
-      <path d="M10 55 Q10 20 50 18 Q90 20 90 55 L90 62 Q90 68 84 68 L16 68 Q10 68 10 62 Z" fill="#e8e8e8" stroke="#1a3a5c" stroke-width="3"/>
-      <rect x="10" y="62" width="80" height="8" rx="3" fill="#d0d0d0" stroke="#1a3a5c" stroke-width="2.5"/>
-      <path d="M25 55 Q25 32 50 30 Q75 32 75 55 L75 60 L25 60 Z" fill="#2a2a2a" stroke="#333" stroke-width="1.5"/>
-      <circle cx="50" cy="50" r="14" fill="#111" stroke="#444" stroke-width="2"/>
-      <circle cx="50" cy="50" r="9" fill="#1a1a1a" stroke="#555" stroke-width="1.5"/>
-      <circle cx="50" cy="50" r="5" fill="#0a0a0a"/>
-      <circle cx="44" cy="44" r="2.5" fill="rgba(255,255,255,0.15)"/>
-      <circle cx="22" cy="58" r="3" fill="#bbb" stroke="#999" stroke-width="1"/>
-      <circle cx="78" cy="58" r="3" fill="#bbb" stroke="#999" stroke-width="1"/>
-      <circle cx="50" cy="65" r="2" fill="#555"/>
-    </svg>`;
-  } else {
-    iconHTML = `<span style="font-size:28px;line-height:1;">${emoji}</span>`;
-  }
+  // Determinar contenido del icono (SVG si existe en ICON_BODIES, si no, emoji tal cual se pasó)
+  const svg = svgIcon(key, 36);
+  const iconHTML = svg ? svg : `<span style="font-size:28px;line-height:1;">${key}</span>`;
 
   el.innerHTML = `
     <div class="equip-controls">
