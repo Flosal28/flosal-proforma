@@ -108,7 +108,7 @@ function getParams() {
   const tel     = p.get('tel')     || '';
   const fecha   = p.get('fecha')   || new Date().toLocaleDateString('es-PE');
   const itemsRaw = p.get('items') || '';
-  const items = itemsRaw ? itemsRaw.split(',').map(i => {
+  const items = itemsRaw ? itemsRaw.split(';').map(i => {
     const parts = i.split('|');
     return {
       nombre:   decodeURIComponent(parts[0] || ''),
