@@ -230,15 +230,21 @@ function buildProforma({ cliente, tel, fecha, items }) {
 // ── Generar PDF con html2pdf ────────────────────────────────────────────
 function getPDFOptions(filename) {
   return {
-    margin: [8, 8, 8, 8],
+    margin: [4, 8, 8, 8], // Reducimos el margen superior de 8mm a 4mm para ganar espacio
     filename: filename,
     image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false, imageTimeout: 15000 },
+    html2canvas: { 
+      scale: 2, 
+      useCORS: true, 
+      allowTaint: true, 
+      logging: false, 
+      imageTimeout: 15000,
+      scrollY: 0 // Evita desplazamientos que corten el encabezado/hora en móviles
+    },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    // SOLUCIÓN: Agregamos 'avoid-all' para auto-paginar y evitamos romper filas de la tabla
     pagebreak: { 
       mode: ['avoid-all', 'css', 'legacy'], 
-      avoid: 'tr' // Evita que corte una fila por la mitad entre páginas
+      avoid: ['tr', '.header', '.date-row'] // Protege la cabecera y filas para que no se corten
     }
   };
 }
