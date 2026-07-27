@@ -763,7 +763,7 @@ function precargarLogo() {
 
 function getPDFOpts(fn) {
   return {
-    margin: [2, 2, 2, 2], // Márgenes súper ajustados (2mm) para aprovechar toda la hoja
+    margin: [2, 2, 2, 2],
     filename: fn,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: {
@@ -774,8 +774,8 @@ function getPDFOpts(fn) {
       logging: false,
       scrollY: 0
     },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }, // HORIZONTAL para que quepa el plano
-    pagebreak: { mode: 'none' } // DESACTIVAR saltos de página para forzar 1 sola hoja
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }, // HORIZONTAL
+    pagebreak: { mode: 'none' } // Todo en 1 página
   };
 }
 
