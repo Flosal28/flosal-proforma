@@ -173,16 +173,11 @@
   overflow: hidden;
 }
   .pdf-stitle { font-size:9px;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1.5px solid #1a3a5c;padding-bottom:3px;margin-bottom:8px; }
-  .pdf-img {
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-  object-fit: contain;
+ .pdf-img {
   border: 1px solid #e5e7eb;
   border-radius: 4px;
-  margin: 0 auto;
   display: block;
+  margin: 0 auto;
 }
   .pdf-ftr { display:flex;align-items:center;justify-content:space-between;padding:8px 20px;border-top:1px solid #e5e7eb;margin-top:8px; }
   .pills { display:flex;gap:4px; }
@@ -811,9 +806,24 @@ async function descargarPDF() {
     document.getElementById('pdf-img').src = imgData;
     document.getElementById('pdf-content').style.display='block';
     await precargarLogo();
+    function ajustarImagenPlano(imgEl) {
+  return new Promise(resolve => {
+    imgEl.onload = () => {
+      const maxW = 1080; // ancho máximo disponible en px (hoja horizontal)
+      const maxH = 480;  // alto máximo disponible en px (deja espacio a header/footer)
+      const ratio = Math.min(maxW / imgEl.naturalWidth, maxH / imgEl.naturalHeight, 1);
+      imgEl.style.width  = (imgEl.naturalWidth  * ratio) + 'px';
+      imgEl.style.height = (imgEl.naturalHeight * ratio) + 'px';
+      resolve();
+    };
+    imgEl.onerror = () => resolve();
+  });
+}
     await html2pdf().set(getPDFOpts(fn)).from(document.getElementById('pdf-page')).save();
   } finally {
     document.getElementById('pdf-content').style.display='none';
+    document.getElementById('pdf-img').src = imgData;
+await ajustarImagenPlano(document.getElementById('pdf-img'));
     // Restaurar canvas
     const last=history[history.length-1];
     if(last){const i=new Image();i.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(i,0,0);};i.src=last;}
@@ -830,6 +840,7 @@ async function enviarWhatsApp() {
     document.getElementById('pdf-dir').textContent = direccion;
     document.getElementById('pdf-fecha').textContent = new Date().toLocaleDateString('es-PE');
     document.getElementById('pdf-img').src = imgData;
+    await ajustarImagenPlano(document.getElementById('pdf-img'));
     document.getElementById('pdf-content').style.display='block';
     await precargarLogo();
     const blob=await html2pdf().set(getPDFOpts(fn)).from(document.getElementById('pdf-page')).outputPdf('blob');
