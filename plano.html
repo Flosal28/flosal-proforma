@@ -763,7 +763,7 @@ function precargarLogo() {
 
 function getPDFOpts(fn) {
   return {
-    margin: [2, 2, 2, 2],
+    margin: [0, 0, 0, 0], // Sin márgenes para ganar todo el espacio disponible
     filename: fn,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: {
@@ -772,10 +772,11 @@ function getPDFOpts(fn) {
       allowTaint: true,
       imageTimeout: 15000,
       logging: false,
-      scrollY: 0
+      scrollY: 0,
+      windowWidth: 1122 // Forzar ancho A4 horizontal exacto
     },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }, // HORIZONTAL
-    pagebreak: { mode: 'none' } // Todo en 1 página
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+    pagebreak: { mode: 'avoid-all' }
   };
 }
 
