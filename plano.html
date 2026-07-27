@@ -772,7 +772,19 @@ function precargarLogo() {
     i.src='https://i.imgur.com/vKZVImG.png';
   });
 }
-
+function ajustarImagenPlano(imgEl) {
+  return new Promise(resolve => {
+    imgEl.onload = () => {
+      const maxW = 1080;
+      const maxH = 480;
+      const ratio = Math.min(maxW / imgEl.naturalWidth, maxH / imgEl.naturalHeight, 1);
+      imgEl.style.width  = (imgEl.naturalWidth  * ratio) + 'px';
+      imgEl.style.height = (imgEl.naturalHeight * ratio) + 'px';
+      resolve();
+    };
+    imgEl.onerror = () => resolve();
+  });
+}
 function getPDFOpts(fn) {
   return {
     margin: [0, 0, 0, 0], // Sin márgenes para ganar todo el espacio disponible
@@ -804,27 +816,12 @@ async function descargarPDF() {
     document.getElementById('pdf-dir').textContent = direccion;
     document.getElementById('pdf-fecha').textContent = new Date().toLocaleDateString('es-PE');
     document.getElementById('pdf-img').src = imgData;
+    await ajustarImagenPlano(document.getElementById('pdf-img'));
     document.getElementById('pdf-content').style.display='block';
     await precargarLogo();
-    function ajustarImagenPlano(imgEl) {
-  return new Promise(resolve => {
-    imgEl.onload = () => {
-      const maxW = 1080; // ancho máximo disponible en px (hoja horizontal)
-      const maxH = 480;  // alto máximo disponible en px (deja espacio a header/footer)
-      const ratio = Math.min(maxW / imgEl.naturalWidth, maxH / imgEl.naturalHeight, 1);
-      imgEl.style.width  = (imgEl.naturalWidth  * ratio) + 'px';
-      imgEl.style.height = (imgEl.naturalHeight * ratio) + 'px';
-      resolve();
-    };
-    imgEl.onerror = () => resolve();
-  });
-}
     await html2pdf().set(getPDFOpts(fn)).from(document.getElementById('pdf-page')).save();
   } finally {
     document.getElementById('pdf-content').style.display='none';
-    document.getElementById('pdf-img').src = imgData;
-await ajustarImagenPlano(document.getElementById('pdf-img'));
-    // Restaurar canvas
     const last=history[history.length-1];
     if(last){const i=new Image();i.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(i,0,0);};i.src=last;}
     hideOv();
