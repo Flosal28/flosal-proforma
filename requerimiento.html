@@ -473,7 +473,7 @@ function buildPDFContent(d) {
 // ── PDF options ──────────────────────────────────────────────────────
 function getPDFOpts(fn) {
   return {
-    margin: [4, 4, 4, 4],
+    margin: [4, 6, 6, 6], // Reducimos margen superior a 4mm para no cortar cabecera
     filename: fn,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: {
@@ -482,13 +482,10 @@ function getPDFOpts(fn) {
       allowTaint: true,
       imageTimeout: 15000,
       logging: false,
-      scrollY: 0
+      scrollY: 0 // Evita que se mueva verticalmente en la pantalla del celular
     },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
-    pagebreak: {
-      mode: ['avoid-all', 'css', 'legacy'],
-      avoid: ['.header', '.plano-container', '.legend']
-    }
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, // VERTICAL para requerimientos
+    pagebreak: { mode: 'none' } // Forzar a que entre en 1 sola página sin saltos
   };
 }
 
