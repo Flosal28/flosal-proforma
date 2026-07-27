@@ -510,7 +510,7 @@ async function descargarPDF() {
     buildPDFContent(d);
     document.getElementById('pdf-content').style.display = 'block';
     await precargarLogo();
-    await html2pdf().set(getPDFOptions(filename)).from(document.getElementById('pdf-page')).save();
+    await html2pdf().set(getPDFOpts(filename)).from(document.getElementById('pdf-page')).save();
   } finally {
     document.getElementById('pdf-content').style.display = 'none';
     ocultarOverlay();
@@ -525,7 +525,7 @@ async function enviarWhatsApp() {
     buildPDFContent(d);
     document.getElementById('pdf-content').style.display = 'block';
     await precargarLogo();
-    const blob = await html2pdf().set(getPDFOptions(filename)).from(document.getElementById('pdf-page')).outputPdf('blob');
+    const blob = await html2pdf().set(getPDFOpts(filename)).from(document.getElementById('pdf-page')).outputPdf('blob');
     document.getElementById('pdf-content').style.display = 'none';
     ocultarOverlay();
 
