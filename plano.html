@@ -166,7 +166,7 @@
   .pdf-badge { display:inline-block;margin-top:4px;background:#e67e22;color:#fff;font-size:8px;font-weight:700;padding:2px 7px;border-radius:3px; }
   .pdf-body {
   padding: 12px 20px;
-  height: 600px;
+  height: 665px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -776,7 +776,7 @@ function ajustarImagenPlano(imgEl) {
   return new Promise(resolve => {
     imgEl.onload = () => {
       const maxW = 1080;
-      const maxH = 480;
+      const maxH = 610;
       const ratio = Math.min(maxW / imgEl.naturalWidth, maxH / imgEl.naturalHeight, 1);
       imgEl.style.width  = (imgEl.naturalWidth  * ratio) + 'px';
       imgEl.style.height = (imgEl.naturalHeight * ratio) + 'px';
