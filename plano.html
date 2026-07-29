@@ -153,35 +153,86 @@
   @keyframes spin { to{transform:rotate(360deg);} }
   .overlay-text { color:#fff;font-size:15px;font-weight:500; }
 
-  #pdf-content { display:none; background:#fff; font-family:'Inter',sans-serif; }
-  .pdf-hdr { display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:3px solid #1a3a5c; }
-  .pdf-hdr-l { display:flex;align-items:center;gap:10px; }
-  .pdf-logo { width:52px;height:52px;object-fit:contain; }
-  .pdf-cli .lbl { font-size:9px;font-weight:700;color:#1a3a5c;text-transform:uppercase; }
-  .pdf-cli .nm { font-size:13px;font-weight:700; }
-  .pdf-cli .det { font-size:10px;color:#666; }
-  .pdf-br { text-align:right; }
-  .pdf-br .bn { font-size:22px;font-weight:900;color:#c0392b;letter-spacing:2px; }
-  .pdf-br .bs { font-size:9px;font-weight:700;color:#1a3a5c; }
-  .pdf-badge { display:inline-block;margin-top:4px;background:#e67e22;color:#fff;font-size:8px;font-weight:700;padding:2px 7px;border-radius:3px; }
+/* Estilos ajustados para asegurar 1 sola página horizontal A4 */
+  #pdf-content { 
+    display: none; 
+    background: #fff; 
+    font-family: 'Inter', sans-serif; 
+  }
+  
+  #pdf-page {
+    width: 297mm;
+    height: 209mm; /* Tamaño A4 horizontal aproximado */
+    padding: 15mm;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .pdf-hdr { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    padding-bottom: 8px; 
+    border-bottom: 3px solid #1a3a5c; 
+    flex-shrink: 0;
+  }
+  .pdf-hdr-l { display: flex; align-items: center; gap: 10px; }
+  .pdf-logo { width: 45px; height: 45px; object-fit: contain; }
+  .pdf-cli .lbl { font-size: 9px; font-weight: 700; color: #1a3a5c; text-transform: uppercase; }
+  .pdf-cli .nm { font-size: 13px; font-weight: 700; }
+  .pdf-cli .det { font-size: 10px; color: #666; }
+  .pdf-br { text-align: right; }
+  .pdf-br .bn { font-size: 20px; font-weight: 900; color: #c0392b; letter-spacing: 2px; }
+  .pdf-br .bs { font-size: 8px; font-weight: 700; color: #1a3a5c; }
+  .pdf-badge { display: inline-block; margin-top: 2px; background: #e67e22; color: #fff; font-size: 8px; font-weight: 700; padding: 2px 7px; border-radius: 3px; }
+
   .pdf-body {
-  padding: 12px 20px;
-  height: 665px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  overflow: hidden;
-}
-  .pdf-stitle { font-size:9px;font-weight:700;color:#1a3a5c;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1.5px solid #1a3a5c;padding-bottom:3px;margin-bottom:8px; }
- .pdf-img {
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
-  display: block;
-  margin: 0 auto;
-}
-  .pdf-ftr { display:flex;align-items:center;justify-content:space-between;padding:8px 20px;border-top:1px solid #e5e7eb;margin-top:8px; }
-  .pills { display:flex;gap:4px; }
-  .pill { font-size:8px;font-weight:800;border:0.5px solid;border-radius:3px;padding:2px 5px; }
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 8px 0;
+  }
+  
+  .pdf-stitle { 
+    width: 100%;
+    font-size: 9px; 
+    font-weight: 700; 
+    color: #1a3a5c; 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px; 
+    border-bottom: 1.5px solid #1a3a5c; 
+    padding-bottom: 2px; 
+    margin-bottom: 6px; 
+  }
+  
+  .pdf-img {
+    max-width: 100%;
+    max-height: 135mm; /* Ajusta la altura máxima para no sobrepasar la hoja */
+    object-fit: contain;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    display: block;
+    margin: 0 auto;
+  }
+
+ .pdf-ftr { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    padding-top: 6px; 
+    border-top: 1px solid #e5e7eb; 
+    flex-shrink: 0;
+  }
+
+  .pills { display: flex; gap: 4px; }
+  .pill { font-size: 8px; font-weight: 800; border: 0.5px solid; border-radius: 3px; padding: 2px 5px; }
   .p-hik{color:#c0392b;border-color:#c0392b;} .p-dah{color:#e67e22;border-color:#e67e22;}
   .p-uni{color:#1a3a5c;border-color:#1a3a5c;} .p-fza{color:#27ae60;border-color:#27ae60;}
   .p-heg{color:#8e44ad;border-color:#8e44ad;}
@@ -808,22 +859,46 @@ function showOv(t){document.getElementById('otxt').textContent=t; document.getEl
 function hideOv(){document.getElementById('overlay').classList.remove('show');}
 
 async function descargarPDF() {
-  const fn=`Plano_FLOSAL_${cliente.replace(/\s+/g,'_')}.pdf`;
+  const element = document.getElementById('pdf-page');
+  const pdfContainer = document.getElementById('pdf-content');
+  
   showOv('Generando PDF...');
+
   try {
     const imgData = await captureAll();
     document.getElementById('pdf-nm').textContent = cliente;
     document.getElementById('pdf-dir').textContent = direccion;
     document.getElementById('pdf-fecha').textContent = new Date().toLocaleDateString('es-PE');
     document.getElementById('pdf-img').src = imgData;
+    
     await ajustarImagenPlano(document.getElementById('pdf-img'));
-    document.getElementById('pdf-content').style.display='block';
+    pdfContainer.style.display = 'block';
     await precargarLogo();
-    await html2pdf().set(getPDFOpts(fn)).from(document.getElementById('pdf-page')).save();
+
+    const opt = {
+      margin:       0,
+      filename:     `Plano_FLOSAL_${cliente.replace(/\s+/g, '_')}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, logging: false },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' },
+      pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    await html2pdf().set(opt).from(element).save();
+    pdfContainer.style.display = 'none';
+
+    const last = history[history.length - 1];
+    if (last) {
+      const i = new Image();
+      i.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(i, 0, 0);
+      };
+      i.src = last;
+    }
+  } catch (err) {
+    console.error(err);
   } finally {
-    document.getElementById('pdf-content').style.display='none';
-    const last=history[history.length-1];
-    if(last){const i=new Image();i.onload=()=>{ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(i,0,0);};i.src=last;}
     hideOv();
   }
 }
