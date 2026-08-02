@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Informe Eléctrico — FLOSAL</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root{
+    --navy:#0B3255;
+    --teal:#1C7EA5;
+    --orange:#E8792E;
+    --bg:#F5F7F9;
+    --border:#EEF2F4;
+    --grey:#6B7A85;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    color:#1A2733;
+  }
+  #toolbar{
+    position:sticky;
+    top:0;
+    z-index:10;
+    display:flex;
+    gap:10px;
+    padding:12px 16px;
+    background:#fff;
+    border-bottom:1px solid var(--border);
+  }
+  #toolbar button{
+    flex:1;
+    border:none;
+    border-radius:10px;
+    padding:12px 0;
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  #btnPdf{ background:var(--navy); color:#fff; }
+  #btnWa{ background:#25D366; color:#fff; }
+
+  #reporte{
+    max-width:480px;
+    margin:0 auto;
+    background:#fff;
+  }
+  .header{
+    background:var(--navy);
+    color:#fff;
+    padding:22px 20px;
+  }
+  .header img{ height:28px; margin-bottom:10px; }
+  .header h1{ margin:0; font-size:20px; }
+  .header p{ margin:4px 0 0; font-size:12px; opacity:.8; }
+
+  .section{ padding:18px 20px 0; }
+  .section h2{
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.4px;
+    color:var(--grey);
+    margin:0 0 8px;
+  }
+  .infoGrid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    font-size:13px;
+  }
+  .infoGrid div span{ display:block; color:var(--grey); font-size:11px; }
+  .infoGrid div b{ color:var(--navy); }
+
+  table{ width:100%; border-collapse:collapse; font-size:13px; margin-top:6px;}
+  th{
+    text-align:left;
+    font-size:10.5px;
+    text-transform:uppercase;
+    color:var(--grey);
+    border-bottom:1px solid var(--border);
+    padding:6px 4px;
+  }
+  td{ padding:8px 4px; border-bottom:1px solid var(--border); color:#1A2733; }
+
+  .resultBox{
+    margin:16px 20px 0;
+    background:var(--navy);
+    color:#fff;
+    border-radius:14px;
+    padding:16px 18px;
+  }
+  .resultRow{ display:flex; justify-content:space-between; font-size:13px; opacity:.9; padding:4px 0; }
+  .resultBig{ display:flex; justify-content:space-between; align-items:baseline; margin-top:8px; padding-top:10px; border-top:1px solid rgba(255,255,255,.15); }
+  .resultBig span{ font-size:13px; opacity:.85; }
+  .resultBig b{ font-size:26px; color:var(--orange); }
+
+  .cards{ display:flex; gap:10px; margin:14px 20px 0; }
+  .card{ flex:1; border-radius:12px; padding:14px 12px; }
+  .card.cable{ background:#EAF6F3; border:1px solid #CDEAE1; }
+  .card.breaker{ background:#FDF1E8; border:1px solid #F6DABF; }
+  .card span{ display:block; font-size:11px; color:var(--grey); margin-top:6px; }
+  .card b{ font-size:16px; color:var(--navy); }
+
+  .caidaBox{
+    margin:10px 20px 0;
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:12px;
+    background:#F0F4F6;
+    border:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+  }
+  .caidaBox.bad{ background:#FDEDED; border-color:#F3C6C6; color:#C94B4B; }
+
+  .obs{
+    margin:16px 20px 0;
+    font-size:12.5px;
+    color:var(--grey);
+    background:#F8FAFB;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px 12px;
+    white-space:pre-wrap;
+  }
+
+  .footer{
+    margin-top:20px;
+    padding:16px 20px 24px;
+    font-size:10.5px;
+    color:#9AA6AD;
+    line-height:1.5;
+  }
+
+  @media print{
+    #toolbar{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <button id="btnPdf">🖨️ PDF</button>
+  <button id="btnWa">📲 WhatsApp</button>
+</div>
+
+<div id="reporte">
+  <div class="header">
+    <img src="https://i.imgur.com/vKZVImG.png" alt="FLOSAL">
+    <h1>Informe Técnico Eléctrico</h1>
+    <p>FLOSAL Seguridad Electrónica · 941 144 164 · 932 596 249</p>
+  </div>
+
+  <div class="section">
+    <h2>Datos del informe</h2>
+    <div class="infoGrid">
+      <div><span>Cliente</span><b id="fCliente">—</b></div>
+      <div><span>Electricista / Empresa</span><b id="fEmpresa">—</b></div>
+      <div><span>N° de Obra</span><b id="fObra">—</b></div>
+      <div><span>Circuito</span><b id="fCircuito">—</b></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Parámetros</h2>
+    <div class="infoGrid">
+      <div><span>Voltaje</span><b id="fVoltaje">—</b></div>
+      <div><span>Distancia</span><b id="fDistancia">—</b></div>
+      <div><span>Factor de demanda</span><b id="fFactorDemanda">—</b></div>
+      <div><span>Factor de seguridad</span><b id="fFactorSeguridad">—</b></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Tabla de cargas</h2>
+    <table>
+      <thead><tr><th>Artefacto</th><th>Potencia (W)</th></tr></thead>
+      <tbody id="tablaCargas"></tbody>
+    </table>
+  </div>
+
+  <div class="resultBox">
+    <div class="resultRow"><span>Potencia total</span><span id="fPotTotal">—</span></div>
+    <div class="resultRow"><span>Potencia corregida</span><span id="fPotCorr">—</span></div>
+    <div class="resultBig"><span>Corriente de diseño</span><b id="fCorriente">—</b></div>
+  </div>
+
+  <div class="cards">
+    <div class="card cable">
+      <div>🔌</div>
+      <span>Cable recomendado</span>
+      <b id="fCable">—</b>
+    </div>
+    <div class="card breaker">
+      <div>🛡️</div>
+      <span>Llave termomagnética</span>
+      <b id="fBreaker">—</b>
+    </div>
+  </div>
+
+  <div class="caidaBox" id="caidaBox">
+    <span>Caída de tensión estimada</span>
+    <b id="fCaida">—</b>
+  </div>
+
+  <div class="section">
+    <h2>Otros parámetros</h2>
+    <div class="infoGrid">
+      <div><span>Curva de breaker</span><b id="fCurva">—</b></div>
+      <div><span>Diferencial sugerido</span><b id="fDiferencial">—</b></div>
+    </div>
+  </div>
+
+  <div class="section" id="obsWrap" style="display:none;">
+    <h2>Observaciones técnicas</h2>
+    <div class="obs" id="fObs"></div>
+  </div>
+
+  <div class="section" id="costoWrap" style="display:none;">
+    <h2>Mano de obra estimada</h2>
+    <div class="resultRow" style="font-size:14px;">
+      <span style="color:var(--navy);font-weight:700;">Estimado (según visita técnica)</span>
+      <span id="fManoObra" style="color:var(--navy);font-weight:700;">—</span>
+    </div>
+    <div class="obs" id="fNotaCosto" style="display:none;"></div>
+  </div>
+
+  <div class="footer">
+    * Cálculo referencial de sección de cable, llave termomagnética y caída de tensión para instalaciones con
+    cobre. La sección final del conductor y la protección deben ser validadas por un técnico según el Código
+    Nacional de Electricidad (CNE) y las condiciones reales de la instalación. La mano de obra estimada es a
+    criterio de FLOSAL según lo observado en la visita técnica y no incluye materiales salvo que se indique.
+  </div>
+</div>
+
+<script>
+  // ------------------------------------------------------------------
+  // Lee los datos desde la URL. Espera un parámetro `d` con un JSON
+  // codificado en base64 (encodeURIComponent + btoa en el origen).
+  //
+  // Estructura esperada del JSON:
+  // {
+  //   cliente, empresa, obra, circuito, observaciones,
+  //   voltaje, distancia, factorDemanda, factorSeguridad,
+  //   cargas: [{nombre, watts}],
+  //   resultado: {
+  //     potenciaTotal, potenciaCorregida, corriente,
+  //     awg, mm2, breaker, curva, diferencial,
+  //     caida, caidaOk
+  //   }
+  // }
+  //
+  // Si tu index.html actual usa el esquema de punto y coma en vez de
+  // base64+JSON, reemplaza solo esta función `leerDatos()`.
+  // ------------------------------------------------------------------
+  function leerDatos() {
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get('d');
+    if (!raw) return null;
+    try {
+      const json = decodeURIComponent(escape(atob(decodeURIComponent(raw))));
+      return JSON.parse(json);
+    } catch (e) {
+      console.error('No se pudo leer el parámetro d:', e);
+      return null;
+    }
+  }
+
+  function fmtW(n) {
+    return (n === undefined || n === null) ? '—' : `${Math.round(n).toLocaleString('es-PE')} W`;
+  }
+
+  function render(data) {
+    if (!data) return;
+
+    document.getElementById('fCliente').textContent = data.cliente || 'Sin cliente';
+    document.getElementById('fEmpresa').textContent = data.empresa || '—';
+    document.getElementById('fObra').textContent = data.obra || '—';
+    document.getElementById('fCircuito').textContent = data.circuito || '—';
+
+    document.getElementById('fVoltaje').textContent = data.voltaje ? `${data.voltaje} V` : '—';
+    document.getElementById('fDistancia').textContent = data.distancia ? `${data.distancia} m` : '—';
+    document.getElementById('fFactorDemanda').textContent = data.factorDemanda ?? '—';
+    document.getElementById('fFactorSeguridad').textContent = data.factorSeguridad ?? '—';
+
+    const tbody = document.getElementById('tablaCargas');
+    tbody.innerHTML = '';
+    (data.cargas || []).forEach(c => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${c.nombre || '—'}</td><td>${fmtW(c.watts)}</td>`;
+      tbody.appendChild(tr);
+    });
+
+    const r = data.resultado || {};
+    document.getElementById('fPotTotal').textContent = fmtW(r.potenciaTotal);
+    document.getElementById('fPotCorr').textContent = fmtW(r.potenciaCorregida);
+    document.getElementById('fCorriente').textContent = r.corriente !== undefined ? `${r.corriente.toFixed(2)} A` : '—';
+
+    document.getElementById('fCable').textContent = r.mm2 ? `${r.mm2} mm² (${r.awg || ''})` : (r.awg || '—');
+    document.getElementById('fBreaker').textContent = r.breaker ? `${r.breaker} A` : '—';
+
+    const caidaBox = document.getElementById('caidaBox');
+    if (r.caida !== undefined) {
+      document.getElementById('fCaida').textContent = `${r.caida.toFixed(2)}%`;
+      if (r.caidaOk === false) caidaBox.classList.add('bad');
+    }
+
+    document.getElementById('fCurva').textContent = r.curva || '—';
+    document.getElementById('fDiferencial').textContent = r.diferencial || '—';
+
+    if (data.observaciones) {
+      document.getElementById('obsWrap').style.display = 'block';
+      document.getElementById('fObs').textContent = data.observaciones;
+    }
+
+    if (data.manoObra !== undefined && data.manoObra !== null) {
+      document.getElementById('costoWrap').style.display = 'block';
+      document.getElementById('fManoObra').textContent =
+        `S/ ${Number(data.manoObra).toLocaleString('es-PE', {minimumFractionDigits: 2})}`;
+      if (data.notaCosto) {
+        const nota = document.getElementById('fNotaCosto');
+        nota.style.display = 'block';
+        nota.textContent = data.notaCosto;
+      }
+    }
+  }
+
+  const datos = leerDatos();
+  render(datos);
+
+  // ------------------------------------------------------------------
+  // Generar PDF (html2canvas + jsPDF), igual patrón que plano.html
+  // ------------------------------------------------------------------
+  document.getElementById('btnPdf').addEventListener('click', async () => {
+    const btn = document.getElementById('btnPdf');
+    const original = btn.textContent;
+    btn.textContent = 'Generando PDF...';
+    btn.disabled = true;
+
+    const el = document.getElementById('reporte');
+    const canvas = await html2canvas(el, { scale: 2, backgroundColor: '#ffffff' });
+    const imgData = canvas.toDataURL('image/png');
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pageWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    const nombreCliente = (datos && datos.cliente) ? datos.cliente.replace(/\s+/g, '_') : 'informe';
+    pdf.save(`FLOSAL_Informe_Electrico_${nombreCliente}.pdf`);
+
+    btn.textContent = original;
+    btn.disabled = false;
+  });
+
+  // ------------------------------------------------------------------
+  // Compartir por WhatsApp (abre wa.me con un resumen en texto)
+  // ------------------------------------------------------------------
+  document.getElementById('btnWa').addEventListener('click', () => {
+    if (!datos) return;
+    const r = datos.resultado || {};
+    const texto = [
+      `*Informe Eléctrico FLOSAL*`,
+      datos.cliente ? `Cliente: ${datos.cliente}` : '',
+      `Corriente: ${r.corriente !== undefined ? r.corriente.toFixed(2) + ' A' : '—'}`,
+      `Cable: ${r.mm2 || ''} mm² (${r.awg || ''})`,
+      `Llave: ${r.breaker || '—'} A`,
+      `Caída de tensión: ${r.caida !== undefined ? r.caida.toFixed(2) + '%' : '—'}`,
+      (datos.manoObra !== undefined && datos.manoObra !== null) ? `Mano de obra estimada: S/ ${Number(datos.manoObra).toFixed(2)}` : '',
+    ].filter(Boolean).join('\n');
+
+    const url = `https://wa.me/?text=${encodeURIComponent(texto)}`;
+    window.open(url, '_blank');
+  });
+</script>
+
+</body>
+</html>
